@@ -162,27 +162,17 @@ function InstanceListRoute() {
       </div>
 
       <Toolbar>
-        <ToolbarDropdown text="Create Instance">
-          <DropdownMenuTrigger asChild>
-            <Button variant={"ghost"}>
-              <LucidePlus />
-              Launch Database
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem
-              onClick={() => navigate("/instance/create/mysql")}
-            >
-              <MySQLIcon className="h-4 w-4" />
-              MySQL
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => navigate("/instance/create/postgres")}
-            >
-              <PostgreIcon className="h-4 w-4" />
-              PostgreSQL
-            </DropdownMenuItem>
-          </DropdownMenuContent>
+        <ToolbarDropdown text="Create Instance" icon={LucidePlus}>
+          <DropdownMenuItem onClick={() => navigate("/instance/create/mysql")}>
+            <MySQLIcon className="h-4 w-4" />
+            MySQL
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => navigate("/instance/create/postgres")}
+          >
+            <PostgreIcon className="h-4 w-4" />
+            PostgreSQL
+          </DropdownMenuItem>
         </ToolbarDropdown>
 
         <ToolbarButton

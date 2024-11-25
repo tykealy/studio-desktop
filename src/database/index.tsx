@@ -86,6 +86,7 @@ function DeletingModal({
 function ConnectionListRoute() {
   const { toast } = useToast();
   const [connectionList, setConnectionList] = useState(() => {
+    console.log(ConnectionStoreManager.list());
     return ConnectionStoreManager.list();
   });
 
