@@ -37,6 +37,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { AnimatePresence, motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 const connectionTypeList = [
   "mysql",
@@ -86,9 +87,10 @@ function DeletingModal({
 function ConnectionListRoute() {
   const { toast } = useToast();
   const [connectionList, setConnectionList] = useState(() => {
-    console.log(ConnectionStoreManager.list());
     return ConnectionStoreManager.list();
   });
+
+  const [selectedConnection, setSelectedConnection] = useState("");
 
   const [deletingConnectionId, setDeletingConnectionId] =
     useState<ConnectionStoreItem | null>(null);
@@ -146,7 +148,13 @@ function ConnectionListRoute() {
                 transition={{ duration: 0.3, ease: "easeOut" }}
                 exit={{ transform: "translateX(100%)" }}
                 key={item.id}
-                className="flex cursor-pointer items-center gap-4 border-b p-4 hover:bg-gray-100"
+                className={cn(
+                  "flex cursor-pointer items-center gap-4 border-b p-4 hover:bg-gray-100",
+                  selectedConnection === item.id && "bg-gray-100",
+                )}
+                onClick={() => {
+                  setSelectedConnection(item.id);
+                }}
                 onDoubleClick={() => {
                   window.outerbaseIpc.connect(item);
                 }}

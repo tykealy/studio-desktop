@@ -248,7 +248,7 @@ export class ConnectionStoreManager {
     const index = list.findIndex((i) => i.id === item.id);
 
     if (index === -1) {
-      list.push(item);
+      list.unshift(item);
     } else {
       list[index] = item;
     }
