@@ -255,4 +255,8 @@ export class ConnectionStoreManager {
 
     localStorage.setItem("connections", JSON.stringify(list));
   }
+
+  static saveAll(items: ConnectionStoreItem[]) {
+    localStorage.setItem("connections", JSON.stringify(items));
+  }
 }
