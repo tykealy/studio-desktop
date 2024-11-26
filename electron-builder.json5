@@ -1,7 +1,7 @@
 // @see - https://www.electron.build/configuration/configuration
 {
   $schema: "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
-  appId: "YourAppID",
+  appId: "com.outerbase.studio",
   asar: true,
   productName: "Outerbase Studio",
   directories: {
@@ -9,8 +9,11 @@
   },
   files: ["dist", "dist-electron"],
   mac: {
+    hardenedRuntime: true,
+    entitlements: "assets/entitlements.mac.plist",
+    entitlementsInherit: "assets/entitlements.mac.plist",
     target: ["dmg"],
-    artifactName: "${productName}-Mac-${version}-Installer.${ext}",
+    artifactName: "outerbase-mac-${version}-Installer.${ext}",
   },
   win: {
     target: [
@@ -19,7 +22,7 @@
         arch: ["x64"],
       },
     ],
-    artifactName: "Outerbase-Setup.${ext}",
+    artifactName: "outerbase-setup.${ext}",
   },
   nsis: {
     oneClick: false,
