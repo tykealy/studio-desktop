@@ -38,8 +38,11 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          GH_TOKEN:  ${{ secrets.GH_TOKEN }}
         run: npm run build:mac
 
       - name: build-win
         if: matrix.os == 'windows-latest'
+        env:
+          GH_TOKEN:  ${{ secrets.GH_TOKEN }}
         run: npm run build:win
