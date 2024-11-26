@@ -8,8 +8,8 @@
     output: "release/${version}",
   },
   files: ["dist", "dist-electron"],
+  afterSign: "scripts/notarize.js",
   mac: {
-    afterSign: "scripts/notarize.js",
     notarize: false,
     hardenedRuntime: true,
     entitlements: "assets/entitlements.mac.plist",
