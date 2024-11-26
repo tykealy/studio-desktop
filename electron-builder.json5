@@ -9,6 +9,8 @@
   },
   files: ["dist", "dist-electron"],
   mac: {
+    afterSign: "scripts/notarize.js",
+    notarize: false,
     hardenedRuntime: true,
     entitlements: "assets/entitlements.mac.plist",
     entitlementsInherit: "assets/entitlements.mac.plist",
