@@ -7,18 +7,19 @@ import {
   TursoIcon,
 } from "./outerbase-icon";
 
+export interface ConnectionStoreItemConfig {
+  ssl?: boolean;
+  host: string;
+  port?: string;
+  database?: string;
+  username?: string;
+  password?: string;
+}
 export interface ConnectionStoreItem {
   id: string;
   name: string;
   type: string;
-  config: {
-    ssl?: boolean;
-    host: string;
-    port?: string;
-    database?: string;
-    username?: string;
-    password?: string;
-  };
+  config: ConnectionStoreItemConfig;
 }
 
 interface ConnectionTypeTemplate {

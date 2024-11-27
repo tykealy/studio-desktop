@@ -55,6 +55,7 @@ import {
 import { AnimatePresence, motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import ImportConnectionStringRoute from "./import-connection-string";
 
 const connectionTypeList = [
   "mysql",
@@ -270,6 +271,17 @@ function ConnectionListRoute() {
     <div className="flex h-full w-full flex-col">
       <Toolbar>
         <ToolbarDropdown text="Add Connection" icon={LucidePlus}>
+          <DropdownMenuItem
+            onClick={() => {
+              navigate("/connection/import");
+            }}
+          >
+            <LucidePlus className="h-4 w-4" />
+            Import Connection String
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
+
           {connectionTypeList.map((type) => {
             const config = connectionTypeTemplates[type];
             const IconComponent = config?.icon ?? MySQLIcon;
@@ -335,6 +347,7 @@ function ConnectionListRoute() {
 
 const ROUTE_LIST = [
   { path: "/connection", Component: ConnectionListRoute },
+  { path: "/connection/import", Component: ImportConnectionStringRoute },
   { path: "/connection/create/:type", Component: ConnectionCreateUpdateRoute },
   {
     path: "/connection/edit/:type/:connectionId",

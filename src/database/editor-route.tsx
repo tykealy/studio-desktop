@@ -1,6 +1,6 @@
 import { Toolbar, ToolbarBackButton, ToolbarTitle } from "@/components/toolbar";
 import ConnectionEditor from "./editor";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   ConnectionStoreItem,
   ConnectionStoreManager,
@@ -14,8 +14,11 @@ export function ConnectionCreateUpdateRoute() {
     connectionId?: string;
   }>();
 
+  const { state: locationState } = useLocation();
+
   const navigate = useNavigate();
   const template = connectionTypeTemplates[type as string];
+
   const [value, setValue] = useState<ConnectionStoreItem>(() => {
     if (connectionId) {
       const connectionValue = ConnectionStoreManager.get(connectionId);
@@ -26,7 +29,7 @@ export function ConnectionCreateUpdateRoute() {
       id: crypto.randomUUID(),
       name: "Unnamed Connection",
       type: type!,
-      config: structuredClone(template.defaultValue),
+      config: structuredClone({ ...template.defaultValue, ...locationState }),
     };
   });
 
