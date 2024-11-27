@@ -21,7 +21,7 @@
         arch: ["x64"],
       },
     ],
-    artifactName: "outerbase-setup.${ext}",
+    artifactName: "outerbase-setup-${version}.${ext}",
   },
   nsis: {
     oneClick: false,
