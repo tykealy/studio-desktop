@@ -22,6 +22,7 @@ export class ConnectionPool {
           user: conn.config.username || "root",
           password: conn.config.password || "",
           database: conn.config.database || "",
+          ssl: conn.config.ssl ? { rejectUnauthorized: false } : undefined,
         });
         break;
       case "sqlite":
@@ -56,6 +57,11 @@ export class ConnectionPool {
           database: conn.config.database || "postgres",
           password: conn.config.password || "",
           port: Number(conn.config.port || "5432"),
+          ssl: conn.config.ssl
+            ? {
+                rejectUnauthorized: false,
+              }
+            : undefined,
         });
         break;
       default:

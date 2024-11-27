@@ -7,6 +7,7 @@ export default class PostgresDriver extends BaseDriver {
 
   constructor(config: ConnectionConfig) {
     super();
+    console.log("Connecting to Postgres", config);
     this.db = new pg.Pool(config);
   }
 

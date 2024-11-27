@@ -12,6 +12,7 @@ export interface ConnectionStoreItem {
   name: string;
   type: string;
   config: {
+    ssl?: boolean;
     host: string;
     port?: string;
     database?: string;
@@ -55,6 +56,16 @@ const genericTemplate: ConnectionEditorTemplate = [
   {
     columns: [
       { name: "database", label: "Database", type: "text", required: true },
+    ],
+  },
+  {
+    columns: [
+      {
+        name: "ssl",
+        label: "SSL",
+        type: "checkbox",
+        required: false,
+      },
     ],
   },
 ];

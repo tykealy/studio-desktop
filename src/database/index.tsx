@@ -114,6 +114,7 @@ function ConnectionItem({
   setConnectionList: Dispatch<SetStateAction<ConnectionStoreItem[]>>;
   setDeletingConnectionId: Dispatch<SetStateAction<ConnectionStoreItem | null>>;
 }) {
+  const [isMenuOpen, setMenuOpen] = useState(false);
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: item.id });
 
@@ -128,7 +129,18 @@ function ConnectionItem({
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...(!isMenuOpen && listeners)}
+      onMouseDown={() => {
+        setSelectedConnection(item.id);
+      }}
+      onDoubleClick={() => {
+        window.outerbaseIpc.connect(item);
+      }}
+    >
       <motion.div
         initial={{ transform: "translateX(100%)" }}
         animate={{ transform: "translateX(0)" }}
@@ -139,12 +151,6 @@ function ConnectionItem({
           "flex cursor-pointer items-center gap-4 border-b p-4 hover:bg-gray-100",
           selectedConnection === item.id ? "bg-gray-100" : "bg-background",
         )}
-        onClick={() => {
-          setSelectedConnection(item.id);
-        }}
-        onDoubleClick={() => {
-          window.outerbaseIpc.connect(item);
-        }}
       >
         <IconComponent className="h-8 w-8" />
         <div className="flex flex-1 flex-col gap-1 text-sm">
@@ -154,7 +160,11 @@ function ConnectionItem({
           </div>
         </div>
         <div>
-          <DropdownMenu modal={false}>
+          <DropdownMenu
+            modal={false}
+            open={isMenuOpen}
+            onOpenChange={setMenuOpen}
+          >
             <DropdownMenuTrigger asChild>
               <Button variant={"ghost"} size={"icon"}>
                 <LucideMoreHorizontal className="h-4 w-4" />

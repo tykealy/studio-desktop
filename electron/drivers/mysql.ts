@@ -1,5 +1,5 @@
 import BaseDriver, { ColumnType, Result, ResultHeader } from "./base";
-import { Pool, PoolConnection, createPool } from "mysql2/promise";
+import { Pool, PoolConnection, SslOptions, createPool } from "mysql2/promise";
 
 enum MySQLType {
   MYSQL_TYPE_DECIMAL,
@@ -114,6 +114,7 @@ export interface MySqlConnectionConfig {
   password: string;
   host: string;
   port: number;
+  ssl?: SslOptions;
 }
 
 export default class MySQLDriver implements BaseDriver {
