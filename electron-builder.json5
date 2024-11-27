@@ -10,18 +10,9 @@
   files: ["dist", "dist-electron"],
   afterSign: "scripts/notarize.cjs",
   mac: {
-    "target": {
-      "target": "default",
-      "arch": [
-        "arm64"
-      ]
-    },
-    "type": "distribution",
-    "hardenedRuntime": true,
-    "entitlements": "assets/entitlements.mac.plist",
-    "entitlementsInherit": "assets/entitlements.mac.plist",
-    "artifactName": "${name}-${version}-${platform}_${arch}.${ext}",
-    "gatekeeperAssess": false
+    notarize: false,
+    target: ["dmg"],
+    artifactName: "outerbase-mac-${version}.${ext}",
   },
   win: {
     target: [
