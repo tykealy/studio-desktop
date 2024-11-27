@@ -11,9 +11,6 @@
   afterSign: "scripts/notarize.cjs",
   mac: {
     notarize: false,
-    hardenedRuntime: true,
-    entitlements: "assets/entitlements.mac.plist",
-    entitlementsInherit: "assets/entitlements.mac.plist",
     target: ["dmg"],
     artifactName: "outerbase-mac-${version}.${ext}",
   },
