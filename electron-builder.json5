@@ -11,7 +11,10 @@
   afterSign: "scripts/notarize.cjs",
   mac: {
     notarize: false,
-    target: ["dmg"],
+    "target": [
+      "dmg",
+      "zip"
+    ],
     artifactName: "outerbase-mac-${version}.${ext}",
   },
   win: {
