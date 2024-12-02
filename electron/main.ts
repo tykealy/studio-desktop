@@ -26,7 +26,7 @@ export function getAutoUpdater(): AppUpdater {
 }
 
 const autoUpdater = getAutoUpdater();
-// log.transports.file.level = "info";
+log.transports.file.level = "info";
 autoUpdater.logger = log;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
