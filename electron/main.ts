@@ -10,11 +10,24 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { ConnectionPool } from "./connection-pool";
 import { DockerHelper } from "./docker-helper";
+import electronUpdater, { type AppUpdater } from "electron-updater";
+import log from "electron-log";
 import { type DatabaseInstanceStoreItem } from "@/lib/db-manager-store";
 import { type ConnectionStoreItem } from "@/lib/conn-manager-store";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 // const require = createRequire(import.meta.url);
+
+export function getAutoUpdater(): AppUpdater {
+  // Using destructuring to access autoUpdater due to the CommonJS module of 'electron-updater'.
+  // It is a workaround for ESM compatibility issues, see https://github.com/electron-userland/electron-builder/issues/7976.
+  const { autoUpdater } = electronUpdater;
+  return autoUpdater;
+}
+
+const autoUpdater = getAutoUpdater();
+// log.transports.file.level = "info";
+autoUpdater.logger = log;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -111,8 +124,40 @@ function createWindow() {
   });
 
   win.webContents.on("will-redirect", (event, url) => {
-    console.log("trying to redirect", url);
+    log.info("trying to redirect", url);
     event.preventDefault();
+  });
+
+  autoUpdater.checkForUpdatesAndNotify();
+
+  autoUpdater.on("checking-for-update", () => {
+    win?.webContents.send("checking-for-update");
+    log.info("checking-for-update");
+  });
+
+  autoUpdater.on("update-available", (info) => {
+    win?.webContents.send("update-available", info);
+    log.info("update-available", info);
+  });
+
+  autoUpdater.on("update-not-available", (info) => {
+    win?.webContents.send("update-not-available", info);
+    log.info("update-not-available", info);
+  });
+
+  autoUpdater.on("error", (info) => {
+    win?.webContents.send("update-error", info);
+    log.info("error", info);
+  });
+
+  autoUpdater.on("download-progress", (progress) => {
+    win?.webContents.send("update-download-progress", progress);
+    log.info("download-progress", progress);
+  });
+
+  autoUpdater.on("update-downloaded", (info) => {
+    win?.webContents.send("update-downloaded", info);
+    log.info("update-downloaded", info);
   });
 
   if (VITE_DEV_SERVER_URL) {

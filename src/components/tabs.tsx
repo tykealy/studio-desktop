@@ -22,7 +22,7 @@ export function Tab({ tabs, selected, onChange }: TabProps) {
     "p-2 border border-b-background bg-background px-4 font-semibold flex items-center cursor-pointer";
 
   return (
-    <div className="flex h-screen w-screen flex-col overflow-hidden">
+    <div className="flex h-full w-full flex-col overflow-hidden">
       <div className="flex bg-secondary pt-1">
         <div className="w-2 border-b"></div>
         {tabs.map((tab) => (

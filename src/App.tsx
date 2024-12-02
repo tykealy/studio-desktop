@@ -3,6 +3,9 @@ import { Tab } from "./components/tabs";
 import InstanceTab from "./instance";
 import DatabaseTab from "./database";
 import { Toaster } from "./components/ui/toaster";
+import UpdateBar from "./components/update-bar";
+
+import pkg from "./../package.json";
 
 function App() {
   const [selected, setSelected] = useState("connection");
@@ -17,7 +20,7 @@ function App() {
   return (
     <>
       <div
-        className="h-screen w-screen"
+        className="flex h-screen w-screen flex-col overflow-hidden"
         onDragOver={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -36,7 +39,14 @@ function App() {
           e.preventDefault();
         }}
       >
-        <Tab selected={selected} onChange={setSelected} tabs={tabs} />
+        <div className="flex-1 overflow-hidden">
+          <Tab selected={selected} onChange={setSelected} tabs={tabs} />
+        </div>
+        <div className="flex items-center bg-gray-600 px-2 py-1 font-mono text-sm text-white">
+          <div>Outerbase Studio v{pkg.version}</div>
+          <div className="flex-1"></div>
+          <UpdateBar />
+        </div>
       </div>
       <Toaster />
     </>

@@ -1,7 +1,7 @@
 {
   "name": "outerbase-studio-desktop",
   "private": true,
-  "version": "0.1.6",
+  "version": "0.1.7",
   "type": "module",
   "author": "Outerbase",
   "description": "Outerbase Studio",
@@ -31,6 +31,8 @@
     "docker-cli-js": "^2.10.0",
     "dockerode": "^4.0.2",
     "dotenv": "^16.4.5",
+    "electron-log": "^5.2.3",
+    "electron-updater": "^6.3.9",
     "framer-motion": "^11.11.11",
     "immer": "^10.1.1",
     "lucide-react": "^0.456.0",
