@@ -62,7 +62,7 @@ function createDatabaseWindow(conn: ConnectionStoreItem) {
     show: false,
     width: 1024,
     height: 768,
-    // autoHideMenuBar: true,
+    autoHideMenuBar: true,
     webPreferences: {
       devTools: true,
       additionalArguments: ["--database=" + conn.id],
@@ -74,7 +74,7 @@ function createDatabaseWindow(conn: ConnectionStoreItem) {
 
   const queryString = new URLSearchParams({ name: conn.name }).toString();
 
-  dbWindow.on("close", () => {
+  dbWindow.on("closed", () => {
     win?.show();
     ConnectionPool.close(conn.id);
   });
@@ -199,6 +199,12 @@ ipcMain.handle(
     return await ConnectionPool.batch(connectionId, query);
   },
 );
+
+ipcMain.handle("close", async (sender) => {
+  sender.sender.close({
+    waitForBeforeUnload: true,
+  });
+});
 
 ipcMain.handle("connect", (_, conn: ConnectionStoreItem) => {
   createDatabaseWindow(conn);

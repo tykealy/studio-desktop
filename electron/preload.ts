@@ -46,6 +46,10 @@ const outerbaseIpc = {
     return ipcRenderer.invoke("transaction", connectionId, statements);
   },
 
+  close() {
+    return ipcRenderer.invoke("close");
+  },
+
   connect(conn: ConnectionStoreItem) {
     return ipcRenderer.invoke("connect", conn);
   },
