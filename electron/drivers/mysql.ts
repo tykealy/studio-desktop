@@ -151,7 +151,7 @@ export default class MySQLDriver implements BaseDriver {
     conn: Pool | PoolConnection,
     statement: string,
   ): Promise<Result> {
-    const [result, fieldsets] = await conn.execute(statement);
+    const [result, fieldsets] = await conn.query(statement);
 
     // If it is not an array, it means
     // it is not a SELECT statement
