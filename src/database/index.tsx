@@ -181,6 +181,15 @@ function ConnectionItem({
                 Connect
               </DropdownMenuItem>
 
+              <DropdownMenuItem
+                inset
+                onClick={() => {
+                  window.outerbaseIpc.connect(item);
+                }}
+              >
+                Connect with debugger
+              </DropdownMenuItem>
+
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => {

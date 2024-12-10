@@ -56,7 +56,10 @@ let win: BrowserWindow | null;
 const STUDIO_ENDPOINT = "https://studio.outerbase.com/embed";
 // const STUDIO_ENDPOINT = "http://localhost:3008/embed";
 
-function createDatabaseWindow(conn: ConnectionStoreItem) {
+function createDatabaseWindow(
+  conn: ConnectionStoreItem,
+  enableDebug?: boolean,
+) {
   const dbWindow = new BrowserWindow({
     icon: path.join(process.env.VITE_PUBLIC, "electron-vite.svg"),
     show: false,
@@ -89,7 +92,7 @@ function createDatabaseWindow(conn: ConnectionStoreItem) {
     dbWindow.loadURL(`${STUDIO_ENDPOINT}/sqlite?${queryString}`);
   }
 
-  if (process.env.NODE_ENV === "development") {
+  if (process.env.NODE_ENV === "development" || enableDebug) {
     dbWindow.webContents.openDevTools();
     dbWindow.maximize();
   }
@@ -206,8 +209,8 @@ ipcMain.handle("close", async (sender) => {
   });
 });
 
-ipcMain.handle("connect", (_, conn: ConnectionStoreItem) => {
-  createDatabaseWindow(conn);
+ipcMain.handle("connect", (_, conn: ConnectionStoreItem, enableDebug) => {
+  createDatabaseWindow(conn, enableDebug);
   if (win) win.hide();
 });
 
