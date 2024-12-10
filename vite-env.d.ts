@@ -1,21 +1,4 @@
 import { type OuterbaseIpc } from "./electron/preload";
-
-declare module "docker-cli-js" {
-  export class Docker {
-    constructor(options?: Options);
-    command(command: string): Promise<CommandResult>;
-  }
-
-  export interface Options {
-    machineName?: string;
-    currentWorkingDirectory?: string;
-  }
-
-  export interface CommandResult {
-    raw: string;
-  }
-}
-
 declare global {
   interface Window {
     outerbaseIpc: OuterbaseIpc;
