@@ -50,8 +50,8 @@ const outerbaseIpc = {
     return ipcRenderer.invoke("close");
   },
 
-  connect(conn: ConnectionStoreItem) {
-    return ipcRenderer.invoke("connect", conn);
+  connect(conn: ConnectionStoreItem, enableDebug?: boolean) {
+    return ipcRenderer.invoke("connect", conn, enableDebug);
   },
 
   openFileDialog(options?: OpenDialogOptions): Promise<OpenDialogReturnValue> {
