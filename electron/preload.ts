@@ -54,6 +54,14 @@ const outerbaseIpc = {
     return ipcRenderer.invoke("connect", conn, enableDebug);
   },
 
+  downloadUpdate() {
+    return ipcRenderer.invoke("download-update");
+  },
+
+  restart() {
+    return ipcRenderer.invoke("restart");
+  },
+
   openFileDialog(options?: OpenDialogOptions): Promise<OpenDialogReturnValue> {
     return ipcRenderer.invoke("open-file-dialog", options);
   },

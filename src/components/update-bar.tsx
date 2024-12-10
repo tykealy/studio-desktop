@@ -1,18 +1,23 @@
-import { type ProgressInfo } from "electron-updater";
+import type { UpdateInfo, ProgressInfo } from "electron-updater";
 import { LucideLoader } from "lucide-react";
 import { useEffect, useState } from "react";
 
+type UpdateStage =
+  | "checking"
+  | "avaliable"
+  | "downloading"
+  | "complete"
+  | "latest";
+
 export default function UpdateBar() {
-  const [checkingUpdate, setCheckingUpdate] = useState(true);
-  const [isLatest, setLatest] = useState(false);
-  const [isComplete, setComplete] = useState(false);
+  const [stage, setStage] = useState<UpdateStage>("checking");
   const [progress, setProgress] = useState<ProgressInfo>();
+  const [latestVersion, setLatestVersion] = useState<UpdateInfo>();
 
   // Update is not avaliable
   useEffect(() => {
     const handler = () => {
-      setCheckingUpdate(false);
-      setLatest(true);
+      setStage("latest");
     };
 
     window.outerbaseIpc.on("update-not-available", handler);
@@ -21,11 +26,24 @@ export default function UpdateBar() {
     };
   }, []);
 
+  useEffect(() => {
+    const handler = (_: unknown, updateInfo: UpdateInfo) => {
+      setStage("avaliable");
+      setLatestVersion(updateInfo);
+    };
+
+    window.outerbaseIpc.on("update-available", handler);
+
+    return () => {
+      window.outerbaseIpc.off("update-available", handler);
+    };
+  }, []);
+
   // Progress bar
   useEffect(() => {
     const handler = (_: unknown, info: ProgressInfo) => {
-      setCheckingUpdate(false);
       setProgress(info);
+      setStage("downloading");
     };
 
     window.outerbaseIpc.on("update-download-progress", handler);
@@ -38,8 +56,7 @@ export default function UpdateBar() {
   // Completed event
   useEffect(() => {
     const handler = () => {
-      setComplete(true);
-      setCheckingUpdate(false);
+      setStage("complete");
     };
 
     window.outerbaseIpc.on("update-downloaded", handler);
@@ -49,7 +66,7 @@ export default function UpdateBar() {
     };
   }, []);
 
-  if (checkingUpdate) {
+  if (stage === "checking") {
     return (
       <div className="flex items-center justify-end pr-2">
         <LucideLoader
@@ -61,17 +78,41 @@ export default function UpdateBar() {
     );
   }
 
-  if (isComplete) {
+  if (stage === "complete") {
     return (
       <div className="flex items-center justify-end pr-2">
-        Update downloaded. Restart to apply changes.
+        Update downloaded.{"  "}
+        <span
+          className="cursor-pointer underline"
+          onClick={() => {
+            window.outerbaseIpc.restart();
+          }}
+        >
+          Click to restart and update
+        </span>
       </div>
     );
   }
 
-  if (isLatest) {
+  if (stage === "latest") {
     return (
       <div className="flex items-center justify-end pr-2">Latest version</div>
+    );
+  }
+
+  if (stage === "avaliable" && latestVersion) {
+    return (
+      <div className="flex items-center justify-end pr-2">
+        New version avaliable: {latestVersion.version}.{"  "}
+        <span
+          className="cursor-pointer underline"
+          onClick={() => {
+            window.outerbaseIpc.downloadUpdate();
+          }}
+        >
+          Update now
+        </span>
+      </div>
     );
   }
 

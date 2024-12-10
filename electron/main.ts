@@ -28,6 +28,7 @@ export function getAutoUpdater(): AppUpdater {
 const autoUpdater = getAutoUpdater();
 log.transports.file.level = "info";
 autoUpdater.logger = log;
+autoUpdater.autoDownload = false;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -212,6 +213,14 @@ ipcMain.handle("close", async (sender) => {
 ipcMain.handle("connect", (_, conn: ConnectionStoreItem, enableDebug) => {
   createDatabaseWindow(conn, enableDebug);
   if (win) win.hide();
+});
+
+ipcMain.handle("download-update", () => {
+  autoUpdater.downloadUpdate();
+});
+
+ipcMain.handle("restart", () => {
+  autoUpdater.quitAndInstall();
 });
 
 ipcMain.handle("docker-start", async (_, containerId: string) => {
