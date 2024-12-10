@@ -11,6 +11,7 @@ import {
   DndContext,
   DragEndEvent,
   KeyboardSensor,
+  Modifier,
   PointerSensor,
   useSensor,
   useSensors,
@@ -65,6 +66,13 @@ const connectionTypeList = [
   "cloudflare",
   "starbase",
 ];
+
+const restrictToVerticalAxis: Modifier = ({ transform }) => {
+  return {
+    ...transform,
+    x: 0,
+  };
+};
 
 function DeletingModal({
   data,
@@ -322,6 +330,7 @@ function ConnectionListRoute() {
             sensors={sensors}
             collisionDetection={closestCenter}
             onDragEnd={handleDragEnd}
+            modifiers={[restrictToVerticalAxis]}
           >
             <SortableContext
               items={connectionList}
