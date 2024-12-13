@@ -9,11 +9,10 @@ import {
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { ConnectionPool } from "./connection-pool";
-import { DockerHelper } from "./docker-helper";
 import electronUpdater, { type AppUpdater } from "electron-updater";
 import log from "electron-log";
-import { type DatabaseInstanceStoreItem } from "@/lib/db-manager-store";
 import { type ConnectionStoreItem } from "@/lib/conn-manager-store";
+import { bindDockerIpc } from "./ipc/docker";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 // const require = createRequire(import.meta.url);
@@ -24,7 +23,6 @@ export function getAutoUpdater(): AppUpdater {
   const { autoUpdater } = electronUpdater;
   return autoUpdater;
 }
-
 const autoUpdater = getAutoUpdater();
 log.transports.file.level = "info";
 autoUpdater.logger = log;
@@ -164,6 +162,8 @@ function createWindow() {
     log.info("update-downloaded", info);
   });
 
+  bindDockerIpc(win);
+
   if (VITE_DEV_SERVER_URL) {
     win.loadURL(VITE_DEV_SERVER_URL);
   } else {
@@ -221,42 +221,6 @@ ipcMain.handle("download-update", () => {
 
 ipcMain.handle("restart", () => {
   autoUpdater.quitAndInstall();
-});
-
-ipcMain.handle("docker-start", async (_, containerId: string) => {
-  return await DockerHelper.startContainer(containerId);
-});
-
-ipcMain.handle("docker-remove", async (_, containerId: string) => {
-  return await DockerHelper.removeContainer(containerId);
-});
-
-ipcMain.handle(
-  "docker-pull",
-  async (sender, data: DatabaseInstanceStoreItem) => {
-    return await DockerHelper.pullImage(data, (event) => {
-      sender.sender.send("docker-pull-progress", {
-        containerId: data.id,
-        progress: event,
-      });
-    });
-  },
-);
-
-ipcMain.handle("docker-create", async (_, data: DatabaseInstanceStoreItem) => {
-  return await DockerHelper.createContainer(data);
-});
-
-ipcMain.handle("docker-list", async () => {
-  return await DockerHelper.list();
-});
-
-ipcMain.handle("docker-stop", async (_, containerId: string) => {
-  return await DockerHelper.stopContainer(containerId);
-});
-
-ipcMain.handle("docker-inspect", async (_, containerId: string) => {
-  return await DockerHelper.getContainer(containerId);
 });
 
 ipcMain.handle("open-file-dialog", async (_, options: OpenDialogOptions) => {

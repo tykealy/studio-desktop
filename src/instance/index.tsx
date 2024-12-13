@@ -24,17 +24,19 @@ import {
 } from "@/lib/db-manager-store";
 import { cn } from "@/lib/utils";
 import { type ContainerInfo } from "dockerode";
-import { type PullImageProgress } from "electron/docker-helper";
 import { useImmer } from "use-immer";
 
 import { PostgresInstance } from "./postgres-instance";
 import { Toolbar, ToolbarButton, ToolbarDropdown } from "@/components/toolbar";
+import { type PullImageProgress } from "electron/ipc/docker";
+import { parseSafeJson } from "@/lib/json-help";
 
 function convertByteToMBString(byte: number) {
   return `${(byte / 1024 / 1024).toFixed(2)}mb`;
 }
 
 function InstanceListRoute() {
+  const [dockerRunning, setDockerRunning] = useState(true);
   const [dbInstanceList, setDbInstanceList] = useState(() =>
     DatabaseManagerStore.list(),
   );
@@ -49,6 +51,27 @@ function InstanceListRoute() {
 
   const [containers, setContainers] = useState<ContainerInfo[]>([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if we want docker running
+    window.outerbaseIpc.docker
+      .init()
+      .then(setDockerRunning)
+      .catch(console.error);
+  }, []);
+
+  useEffect(() => {
+    return window.outerbaseIpc.on("docker-event", (_, rawEvent: string) => {
+      const dockerEvent: { Type?: string } = parseSafeJson(rawEvent, {});
+
+      if (dockerEvent?.Type === "container") {
+        console.info(
+          "Getting the docker container list because there is container event changed",
+        );
+        window.outerbaseIpc.docker.list().then(setContainers);
+      }
+    });
+  }, []);
 
   useEffect(() => {
     window.outerbaseIpc.docker.list().then(setContainers);
@@ -66,14 +89,15 @@ function InstanceListRoute() {
         if (inspectedContainer) {
           // Start the container
           await window.outerbaseIpc.docker.start(container.id);
-          setContainers(await window.outerbaseIpc.docker.list());
+
+          setErrorList((draft) => {
+            delete draft[container.id];
+          });
         } else {
           // Create the container
           await window.outerbaseIpc.docker.pull(container);
           await window.outerbaseIpc.docker.create(container);
           await window.outerbaseIpc.docker.start(container.id);
-
-          setContainers(await window.outerbaseIpc.docker.list());
 
           setProgressList((draft) => {
             delete draft[container.id];
@@ -107,11 +131,6 @@ function InstanceListRoute() {
 
       try {
         await window.outerbaseIpc.docker.stop(container.id);
-
-        // Wait for the container to stop
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-
-        setContainers(await window.outerbaseIpc.docker.list());
       } finally {
         setStoppingIds((ids) => ids.filter((id) => id !== container.id));
       }
@@ -120,24 +139,21 @@ function InstanceListRoute() {
   );
 
   useEffect(() => {
-    const progressHandler = (
-      _: unknown,
-      event: {
-        progress: PullImageProgress;
-        containerId: string;
+    return window.outerbaseIpc.on(
+      "docker-pull-progress",
+      (
+        _: unknown,
+        event: {
+          progress: PullImageProgress;
+          containerId: string;
+        },
+      ) => {
+        setProgressList((draft) => {
+          draft[event.containerId] = draft[event.containerId] || {};
+          draft[event.containerId][event.progress.id] = event.progress;
+        });
       },
-    ) => {
-      setProgressList((draft) => {
-        draft[event.containerId] = draft[event.containerId] || {};
-        draft[event.containerId][event.progress.id] = event.progress;
-      });
-    };
-
-    window.outerbaseIpc.on("docker-pull-progress", progressHandler);
-
-    return () => {
-      window.outerbaseIpc.off("docker-pull-progress", progressHandler);
-    };
+    );
   }, [setProgressList]);
 
   const onDeleteClicked = useCallback(
@@ -156,10 +172,32 @@ function InstanceListRoute() {
       <div className="p-3">
         <h1 className="text-xl font-bold">Database Instance Management</h1>
         <p className="max-w-[400px] text-sm text-gray-500">
-          Effortlessly launch and manage your database container—an ideal
-          solution to get started with database development.
+          Effortlessly launch and manage your database container.
         </p>
       </div>
+
+      {!dockerRunning && (
+        <div className="mx-3 flex flex-col gap-1 rounded bg-red-200 p-3 text-xs">
+          <p>
+            We cannot detect any Docker in your system. We use docker to manage
+            your database instance.
+          </p>
+          <div>
+            <Button
+              size="sm"
+              className="h-auto px-2 py-1 text-xs"
+              onClick={() => {
+                window.outerbaseIpc.docker
+                  .init()
+                  .then(setDockerRunning)
+                  .catch();
+              }}
+            >
+              Try again
+            </Button>
+          </div>
+        </div>
+      )}
 
       <Toolbar>
         <ToolbarDropdown text="Create Instance" icon={LucidePlus}>
@@ -315,6 +353,13 @@ function InstanceListRoute() {
                       }}
                     >
                       Connect
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        window.outerbaseIpc.docker.openVolume(db.id);
+                      }}
+                    >
+                      Open Data Folder
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
