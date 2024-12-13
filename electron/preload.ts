@@ -18,14 +18,14 @@ console.log("Connection ID", connectionId);
 const outerbaseIpc = {
   on(...args: Parameters<typeof ipcRenderer.on>) {
     const [channel, listener] = args;
-    return ipcRenderer.on(channel, (event, ...args) =>
-      listener(event, ...args),
-    );
+    ipcRenderer.on(channel, listener);
+    return () => {
+      ipcRenderer.removeListener(channel, listener);
+    };
   },
 
   off(...args: Parameters<typeof ipcRenderer.off>) {
-    const [channel, ...omit] = args;
-    return ipcRenderer.off(channel, ...omit);
+    return ipcRenderer.off(...args);
   },
 
   send(...args: Parameters<typeof ipcRenderer.send>) {
@@ -67,6 +67,14 @@ const outerbaseIpc = {
   },
 
   docker: {
+    openVolume(containerId: string) {
+      return ipcRenderer.invoke("docker-open-vol", containerId);
+    },
+
+    init(): Promise<boolean> {
+      return ipcRenderer.invoke("docker-init");
+    },
+
     start(containerId: string) {
       return ipcRenderer.invoke("docker-start", containerId);
     },
