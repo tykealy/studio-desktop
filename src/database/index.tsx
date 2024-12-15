@@ -192,7 +192,7 @@ function ConnectionItem({
               <DropdownMenuItem
                 inset
                 onClick={() => {
-                  window.outerbaseIpc.connect(item);
+                  window.outerbaseIpc.connect(item, true);
                 }}
               >
                 Connect with debugger
