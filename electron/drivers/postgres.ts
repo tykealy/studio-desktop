@@ -2,6 +2,12 @@ import BaseDriver, { ColumnType, Result } from "./base";
 import pg, { type ConnectionConfig, type FieldDef, type PoolClient } from "pg";
 import { transformArrayBasedResult } from "./transformer";
 
+pg.types.setTypeParser(pg.types.builtins.TIME, (timeStr) => timeStr);
+pg.types.setTypeParser(pg.types.builtins.TIMESTAMP, (timeStr) => timeStr);
+pg.types.setTypeParser(pg.types.builtins.TIMESTAMPTZ, (timeStr) => timeStr);
+pg.types.setTypeParser(pg.types.builtins.DATE, (timeStr) => timeStr);
+pg.types.setTypeParser(pg.types.builtins.TIME, (timeStr) => timeStr);
+
 export default class PostgresDriver extends BaseDriver {
   protected db: pg.Pool;
 
