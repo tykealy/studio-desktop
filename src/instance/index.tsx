@@ -177,7 +177,7 @@ function InstanceListRoute() {
       </div>
 
       {!dockerRunning && (
-        <div className="mx-3 flex flex-col gap-1 rounded bg-red-200 p-3 text-xs">
+        <div className="mx-3 flex flex-col gap-1 rounded bg-red-200 p-3 text-xs dark:bg-red-400">
           <p>
             We cannot detect any Docker in your system. We use docker to manage
             your database instance.

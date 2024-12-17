@@ -13,6 +13,8 @@ import electronUpdater, { type AppUpdater } from "electron-updater";
 import log from "electron-log";
 import { type ConnectionStoreItem } from "@/lib/conn-manager-store";
 import { bindDockerIpc } from "./ipc/docker";
+import { Setting } from "./setting";
+import { ThemeType } from "@/context/theme-provider";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 // const require = createRequire(import.meta.url);
@@ -50,6 +52,8 @@ process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL
   ? path.join(process.env.APP_ROOT, "public")
   : RENDERER_DIST;
 
+const settings = new Setting();
+settings.load();
 let win: BrowserWindow | null;
 
 const STUDIO_ENDPOINT = "https://studio.outerbase.com/embed";
@@ -72,9 +76,14 @@ function createDatabaseWindow(
     },
   });
 
+  const theme = settings.get<ThemeType>("theme") || "light";
+
   ConnectionPool.create(conn);
 
-  const queryString = new URLSearchParams({ name: conn.name }).toString();
+  const queryString = new URLSearchParams({
+    name: conn.name,
+    theme,
+  }).toString();
 
   dbWindow.on("closed", () => {
     win?.show();
@@ -225,4 +234,12 @@ ipcMain.handle("restart", () => {
 
 ipcMain.handle("open-file-dialog", async (_, options: OpenDialogOptions) => {
   return await dialog.showOpenDialog(options);
+});
+
+ipcMain.handle("get-setting", (_, key) => {
+  return settings.get(key);
+});
+
+ipcMain.handle("set-setting", (_, key, value) => {
+  settings.set(key, value);
 });

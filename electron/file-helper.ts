@@ -14,3 +14,7 @@ export function getUserDataPath(relativePath: string) {
 
   return userRelativePath;
 }
+
+export function getUserDataFile(filename: string) {
+  return path.join(app.getPath("userData"), filename)
+}

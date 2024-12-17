@@ -157,8 +157,10 @@ function ConnectionItem({
         exit={{ transform: "translateX(100%)" }}
         key={item.id}
         className={cn(
-          "flex cursor-pointer items-center gap-4 border-b p-4 hover:bg-gray-100",
-          selectedConnection === item.id ? "bg-gray-100" : "bg-background",
+          "flex cursor-pointer items-center gap-4 border-b p-4 hover:bg-gray-100 dark:hover:bg-neutral-800",
+          selectedConnection === item.id
+            ? "bg-gray-100 dark:bg-neutral-900"
+            : "bg-background",
         )}
       >
         <IconComponent className="h-8 w-8" />
