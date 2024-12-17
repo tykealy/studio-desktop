@@ -1,7 +1,7 @@
 {
   "name": "outerbase-studio-desktop",
   "private": true,
-  "version": "0.1.15",
+  "version": "0.1.16",
   "type": "module",
   "author": "Outerbase",
   "description": "Outerbase Studio",
