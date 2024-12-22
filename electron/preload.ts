@@ -7,6 +7,7 @@ import {
 } from "electron";
 import { type ConnectionStoreItem } from "@/lib/conn-manager-store";
 import { type ContainerInspectInfo, type ContainerInfo } from "dockerode";
+import { Result } from "./drivers/base";
 
 // Get connection id
 const connectionId = process.argv
@@ -52,6 +53,10 @@ const outerbaseIpc = {
 
   connect(conn: ConnectionStoreItem, enableDebug?: boolean) {
     return ipcRenderer.invoke("connect", conn, enableDebug);
+  },
+
+  testConnection(conn: ConnectionStoreItem): Promise<Result> {
+    return ipcRenderer.invoke("test-connection", conn);
   },
 
   downloadUpdate() {
@@ -105,11 +110,11 @@ const outerbaseIpc = {
   },
 
   setting: {
-    get: <T = string>(key: string): Promise<T> => ipcRenderer.invoke("get-setting", key),
+    get: <T = string>(key: string): Promise<T> =>
+      ipcRenderer.invoke("get-setting", key),
     set: <T = string>(key: string, value: T): Promise<void> =>
-      ipcRenderer.invoke("set-setting", key, value)
-  }
-
+      ipcRenderer.invoke("set-setting", key, value),
+  },
 };
 
 export type OuterbaseIpc = typeof outerbaseIpc;

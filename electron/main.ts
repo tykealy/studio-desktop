@@ -233,6 +233,10 @@ ipcMain.handle("connect", (_, conn: ConnectionStoreItem, enableDebug) => {
   if (application.win) application.win.hide();
 });
 
+ipcMain.handle("test-connection", async (_, conn: ConnectionStoreItem) => {
+  return await ConnectionPool.testConnection(conn);
+});
+
 ipcMain.handle("download-update", () => {
   autoUpdater.downloadUpdate();
 });

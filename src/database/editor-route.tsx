@@ -8,12 +8,16 @@ import {
 } from "@/lib/conn-manager-store";
 import { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { LucideLoader } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 export function ConnectionCreateUpdateRoute() {
   const { type, connectionId } = useParams<{
     type: string;
     connectionId?: string;
   }>();
+  const { toast } = useToast();
 
+  const [connecting, setConnecting] = useState(false);
   const { state: locationState } = useLocation();
 
   const navigate = useNavigate();
@@ -38,6 +42,29 @@ export function ConnectionCreateUpdateRoute() {
     navigate(-1);
   }, [value, navigate]);
 
+  const onConnectClicked = useCallback(() => {
+    const duration = 2000;
+    setConnecting(true);
+    window.outerbaseIpc
+      .testConnection(value)
+      .then(() => {
+        setConnecting(false);
+        toast({
+          title: "Success",
+          description: "Successfully connected to database",
+          duration,
+        });
+      })
+      .catch(() => {
+        setConnecting(false);
+        toast({
+          title: "Failed to connect to database",
+          description: "Please check your connection settings",
+          duration,
+        });
+      });
+  }, [value, toast]);
+
   return (
     <div>
       <Toolbar>
@@ -53,6 +80,15 @@ export function ConnectionCreateUpdateRoute() {
       </div>
       <div className="flex gap-2 border-t px-8 py-4">
         <Button onClick={onSaveClicked}>Save</Button>
+        <Button onClick={onConnectClicked} className="gap-0">
+          {connecting && (
+            <LucideLoader
+              className="mr-2 inline-block h-4 w-4 animate-spin"
+              size={16}
+            />
+          )}
+          Test Connection
+        </Button>
       </div>
     </div>
   );
