@@ -7,6 +7,8 @@ pg.types.setTypeParser(pg.types.builtins.TIMESTAMP, (timeStr) => timeStr);
 pg.types.setTypeParser(pg.types.builtins.TIMESTAMPTZ, (timeStr) => timeStr);
 pg.types.setTypeParser(pg.types.builtins.DATE, (timeStr) => timeStr);
 pg.types.setTypeParser(pg.types.builtins.TIME, (timeStr) => timeStr);
+pg.types.setTypeParser(pg.types.builtins.JSON, (json) => json);
+pg.types.setTypeParser(pg.types.builtins.JSONB, (json) => json);
 
 export default class PostgresDriver extends BaseDriver {
   protected db: pg.Pool;
