@@ -11,11 +11,7 @@ const autoUpdater = getAutoUpdater();
  * WARNING: Avoid using this main window as multiple window
  */
 export class MainWindow {
-  private application: OuterbaseApplication = {};
-
-  constructor() {
-    this.application.win = undefined;
-  }
+  private win?: BrowserWindow;
 
   /**
    * Initialize the main window
@@ -23,7 +19,7 @@ export class MainWindow {
   public init() {
     const dirname = getOuterbaseDir();
 
-    this.application.win = new BrowserWindow({
+    this.win = new BrowserWindow({
       icon: path.join(process.env.VITE_PUBLIC, "electron-vite.svg"),
       title: "Outerbase Studio",
       autoHideMenuBar: true,
@@ -33,12 +29,12 @@ export class MainWindow {
       },
     });
     if (isDev) {
-      this.application.win.webContents.openDevTools({ mode: "detach" });
+      this.win.webContents.openDevTools({ mode: "detach" });
     }
 
-    this.application.win.on("close", (event) => {
+    this.win.on("close", (event) => {
       if (BrowserWindow.getAllWindows().length === 1) {
-        this.application.win?.destroy();
+        this.win?.destroy();
       } else {
         this.navigate("/connection");
         this.hide();
@@ -47,19 +43,19 @@ export class MainWindow {
     });
 
     // Test active push message to Renderer-process.
-    this.application.win.webContents.on("did-finish-load", () => {
-      this.application.win?.webContents.send(
+    this.win.webContents.on("did-finish-load", () => {
+      this.win?.webContents.send(
         "main-process-message",
         new Date().toLocaleString(),
       );
     });
 
-    this.application.win.webContents.on("will-navigate", (event, url) => {
+    this.win.webContents.on("will-navigate", (event, url) => {
       console.log("trying to navigate", url);
       event.preventDefault();
     });
 
-    this.application.win.webContents.on("will-redirect", (event, url) => {
+    this.win.webContents.on("will-redirect", (event, url) => {
       log.info("trying to redirect", url);
       event.preventDefault();
     });
@@ -67,27 +63,27 @@ export class MainWindow {
     autoUpdater.checkForUpdatesAndNotify();
 
     autoUpdater.on("checking-for-update", () => {
-      this.application.win?.webContents.send("checking-for-update");
+      this.win?.webContents.send("checking-for-update");
       log.info("checking-for-update");
     });
 
     autoUpdater.on("update-available", (info) => {
-      this.application.win?.webContents.send("update-available", info);
+      this.win?.webContents.send("update-available", info);
       log.info("update-available", info);
     });
 
     autoUpdater.on("update-not-available", (info) => {
-      this.application.win?.webContents.send("update-not-available", info);
+      this.win?.webContents.send("update-not-available", info);
       log.info("update-not-available", info);
     });
 
     autoUpdater.on("error", (info) => {
-      this.application.win?.webContents.send("update-error", info);
+      this.win?.webContents.send("update-error", info);
       log.info("error", info);
     });
 
     autoUpdater.on("download-progress", (progress) => {
-      this.application.win?.webContents.send(
+      this.win?.webContents.send(
         "update-download-progress",
         progress,
       );
@@ -95,38 +91,38 @@ export class MainWindow {
     });
 
     autoUpdater.on("update-downloaded", (info) => {
-      this.application.win?.webContents.send("update-downloaded", info);
+      this.win?.webContents.send("update-downloaded", info);
       log.info("update-downloaded", info);
     });
 
     if (VITE_DEV_SERVER_URL) {
-      this.application.win.loadURL(VITE_DEV_SERVER_URL);
+      this.win.loadURL(VITE_DEV_SERVER_URL);
     } else {
       // win.loadFile('dist/index.html')
-      this.application.win.loadFile(path.join(RENDERER_DIST, "index.html"));
+      this.win.loadFile(path.join(RENDERER_DIST, "index.html"));
     }
   }
 
   public navigate(routeName: string): void {
-    if (this.application.win) {
-      if (this.application.win.isDestroyed()) {
+    if (this.win) {
+      if (this.win.isDestroyed()) {
         this.init();
       } else {
         this.show();
       }
-      this.application.win.webContents.send("navigate-to", routeName);
+      this.win.webContents.send("navigate-to", routeName);
     }
   }
 
   public hide(): void {
-    this.application.win?.hide();
+    this.win?.hide();
   }
 
   public show(): void {
-    if (!this.application.win || this.application.win.isDestroyed()) {
+    if (!this.win || this.win.isDestroyed()) {
       this.init();
     } else {
-      this.application.win?.show();
+      this.win?.show();
     }
   }
 
@@ -135,10 +131,10 @@ export class MainWindow {
    * @returns Browswer window
    */
   public getWindow(): OuterbaseApplication["win"] {
-    return this.application.win;
+    return this.win;
   }
 
   public remove() {
-    this.application.win = undefined;
+    this.win = undefined;
   }
 }
