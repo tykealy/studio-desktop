@@ -49,7 +49,7 @@ process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL
   ? path.join(process.env.APP_ROOT, "public")
   : RENDERER_DIST;
 
-const settings = new Setting();
+export const settings = new Setting();
 settings.load();
 
 const mainWindow = new MainWindow();
@@ -101,7 +101,6 @@ ipcMain.handle("close", async (event) => {
 ipcMain.handle("connect", (_, conn: ConnectionStoreItem, enableDebug) => {
   createDatabaseWindow({
     conn,
-    settings,
     main: mainWindow,
     enableDebug,
   });

@@ -3,22 +3,20 @@ import { ConnectionStoreItem } from "@/lib/conn-manager-store";
 import { BrowserWindow } from "electron";
 import { ConnectionPool } from "../connection-pool";
 import { STUDIO_ENDPOINT } from "../constants";
-import { Setting } from "../setting";
 import { getWindowConfig, isDev } from "../utils";
 import { MainWindow } from "./main-window";
+import { settings } from "../main";
 
 export const windowMap = new Map<string, BrowserWindow>();
 
 export function createDatabaseWindow(ctx: {
   main: MainWindow;
-  settings: Setting;
   conn: ConnectionStoreItem;
   enableDebug?: boolean;
 }) {
   const win = ctx.main.getWindow();
-  const dbWindow = new BrowserWindow(getWindowConfig(ctx.conn.id));
-
-  const theme = ctx.settings.get<ThemeType>("theme") || "light";
+  const theme = settings.get<ThemeType>("theme") || "light";
+  const dbWindow = new BrowserWindow(getWindowConfig(ctx.conn.id, theme));
 
   ConnectionPool.create(ctx.conn);
 

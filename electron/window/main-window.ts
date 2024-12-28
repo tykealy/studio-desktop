@@ -3,7 +3,14 @@ import log from "electron-log";
 import { BrowserWindow } from "electron";
 import { OuterbaseApplication } from "../type";
 import { getOuterbaseDir, isDev } from "../utils";
-import { VITE_DEV_SERVER_URL, RENDERER_DIST, getAutoUpdater } from "../main";
+import {
+  VITE_DEV_SERVER_URL,
+  RENDERER_DIST,
+  getAutoUpdater,
+  settings,
+} from "../main";
+import { ThemeType } from "@/context/theme-provider";
+import { Colors } from "../../src/theme/Colors";
 
 const autoUpdater = getAutoUpdater();
 
@@ -18,11 +25,12 @@ export class MainWindow {
    */
   public init() {
     const dirname = getOuterbaseDir();
-
+    const theme = settings.get<ThemeType>("theme") || "light";
     this.win = new BrowserWindow({
       icon: path.join(process.env.VITE_PUBLIC, "electron-vite.svg"),
       title: "Outerbase Studio",
       autoHideMenuBar: true,
+      backgroundColor: Colors.background[theme],
       webPreferences: {
         devTools: true,
         preload: path.join(dirname, "preload.mjs"),
@@ -83,10 +91,7 @@ export class MainWindow {
     });
 
     autoUpdater.on("download-progress", (progress) => {
-      this.win?.webContents.send(
-        "update-download-progress",
-        progress,
-      );
+      this.win?.webContents.send("update-download-progress", progress);
       log.info("download-progress", progress);
     });
 
