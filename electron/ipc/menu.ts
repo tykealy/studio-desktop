@@ -1,5 +1,4 @@
 import { isMac } from "../utils";
-import { Setting } from "../setting";
 import { MainWindow } from "../window/main-window";
 import { OUTERBASE_GITHUB, OUTERBASE_WEBSITE } from "../constants";
 import { ConnectionStoreItem } from "@/lib/conn-manager-store";
@@ -12,7 +11,7 @@ import {
 } from "electron";
 import { createDatabaseWindow, windowMap } from "../window/create-database";
 
-export function bindMenuIpc(main: MainWindow, settings: Setting) {
+export function bindMenuIpc(main: MainWindow) {
   const mainWindow = main.getWindow();
 
   function createMenu(connections: ConnectionStoreItem[]) {
@@ -39,7 +38,7 @@ export function bindMenuIpc(main: MainWindow, settings: Setting) {
                   if (mainWindow?.isVisible()) {
                     main.hide();
                   }
-                  createDatabaseWindow({ main, conn, settings });
+                  createDatabaseWindow({ main, conn });
                 }
               }
             },

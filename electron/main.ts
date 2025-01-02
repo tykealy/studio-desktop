@@ -77,7 +77,7 @@ app
   .then(() => mainWindow.init())
   .finally(() => {
     bindDockerIpc(mainWindow);
-    bindMenuIpc(mainWindow, settings);
+    bindMenuIpc(mainWindow);
   });
 
 ipcMain.handle("query", async (_, connectionId, query) => {
