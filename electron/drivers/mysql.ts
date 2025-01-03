@@ -151,6 +151,8 @@ export interface MySqlConnectionConfig {
 export default class MySQLDriver implements BaseDriver {
   db?: Pool;
   connectionString: MySqlConnectionConfig;
+  keepAliveTimer: NodeJS.Timeout | null = null;
+  isPinging = false;
 
   constructor(connectionString: MySqlConnectionConfig) {
     this.connectionString = connectionString;
@@ -159,6 +161,10 @@ export default class MySQLDriver implements BaseDriver {
   async close() {
     if (this.db) {
       await this.db.end();
+    }
+
+    if (this.keepAliveTimer) {
+      clearInterval(this.keepAliveTimer);
     }
   }
 
@@ -170,7 +176,25 @@ export default class MySQLDriver implements BaseDriver {
       dateStrings: true,
       pool: { min: 1, max: 1 },
       connectionLimit: 1,
+      enableKeepAlive: true,
     });
+
+    this.keepAliveTimer = setInterval(() => {
+      if (this.isPinging) return;
+
+      this.isPinging = true;
+      this.db
+        ?.getConnection()
+        .then((conn) => {
+          conn.ping();
+          conn.release();
+        })
+        .catch(console.error)
+        .finally(() => {
+          this.isPinging = false;
+        });
+    }, 6000);
+
     return this.db;
   }
 
