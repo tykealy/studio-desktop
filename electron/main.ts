@@ -58,9 +58,9 @@ const mainWindow = new MainWindow();
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on("window-all-closed", () => {
+  mainWindow.remove();
   if (!isMac) {
     app.quit();
-    mainWindow.remove();
   }
 });
 
@@ -69,6 +69,7 @@ app.on("activate", () => {
   // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) {
     mainWindow.init();
+    bindMenuIpc(mainWindow);
   }
 });
 
