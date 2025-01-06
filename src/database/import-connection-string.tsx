@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { ConnectionStoreItemConfig } from "@/lib/conn-manager-store";
+import { DoltIcon, MySQLIcon } from "@/lib/outerbase-icon";
+import { cn } from "@/lib/utils";
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -10,6 +12,7 @@ export default function ImportConnectionStringRoute() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [connectionString, setConnectionString] = useState("");
+  const [mysqlConnectionType, setMySQLConnectionType] = useState("mysql");
 
   const onImportClick = useCallback(() => {
     let url = new URL(connectionString);
@@ -30,7 +33,7 @@ export default function ImportConnectionStringRoute() {
 
     if (protocol === "mysql") {
       console.log("Importing MySQL connection string");
-      navigate("/connection/create/mysql", {
+      navigate(`/connection/create/${mysqlConnectionType}`, {
         replace: true,
         state: {
           host: url.hostname,
@@ -56,7 +59,9 @@ export default function ImportConnectionStringRoute() {
         } as ConnectionStoreItemConfig,
       });
     }
-  }, [connectionString, navigate, toast]);
+  }, [connectionString, navigate, toast, mysqlConnectionType]);
+
+  const isMySQL = connectionString.trim().startsWith("mysql://");
 
   return (
     <div>
@@ -68,6 +73,8 @@ export default function ImportConnectionStringRoute() {
       <div className="flex flex-col gap-4 p-4">
         <Textarea
           rows={5}
+          autoFocus
+          spellCheck={false}
           className="resize-none p-4 font-mono"
           placeholder="Connection String. Eg: mysql://root:123456@localhost:3306/database_name"
           value={connectionString}
@@ -76,7 +83,40 @@ export default function ImportConnectionStringRoute() {
           }}
         />
 
-        <div>
+        {isMySQL && (
+          <div className="flex gap-2">
+            <button
+              className={cn(
+                "flex items-center gap-2 rounded border-2 p-2 px-4 text-sm font-semibold",
+                mysqlConnectionType === "mysql"
+                  ? "border-blue-500 bg-blue-200"
+                  : "",
+              )}
+              onClick={() => {
+                setMySQLConnectionType("mysql");
+              }}
+            >
+              <MySQLIcon className="h-6 w-6" />
+              <span>MySQL</span>
+            </button>
+            <button
+              className={cn(
+                "flex items-center gap-2 rounded border-2 p-2 px-4 text-sm font-semibold",
+                mysqlConnectionType === "dolt"
+                  ? "border-green-500 bg-green-200"
+                  : "hover:border-green-500",
+              )}
+              onClick={() => {
+                setMySQLConnectionType("dolt");
+              }}
+            >
+              <DoltIcon className="h-6 w-6" />
+              <span>Dolt</span>
+            </button>
+          </div>
+        )}
+
+        <div className="mt-4">
           <Button onClick={onImportClick}>Import</Button>
         </div>
       </div>

@@ -39,6 +39,8 @@ function ConnectionDropdownItem({
 }
 
 export default function AddConnectionDropdown() {
+  const navigate = useNavigate();
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -78,7 +80,12 @@ export default function AddConnectionDropdown() {
           </div>
         </div>
         <div className="flex flex-1 border-t p-2">
-          <button className="flex flex-1 items-center justify-start rounded-lg p-2 text-left text-sm font-semibold hover:bg-secondary">
+          <button
+            className="flex flex-1 items-center justify-start rounded-lg p-2 text-left text-sm font-semibold hover:bg-secondary"
+            onClick={() => {
+              navigate("/connection/import");
+            }}
+          >
             <LucidePlus className="mr-2 h-4 w-4" />
             Import Connection String
           </button>
