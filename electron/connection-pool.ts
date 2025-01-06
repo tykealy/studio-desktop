@@ -22,6 +22,7 @@ export class ConnectionPool {
     let connectionPool: ConnectionPoolType;
     switch (conn.type) {
       case "mysql":
+      case "dolt":
         connectionPool = new MySQLDriver({
           host: conn.config.host,
           port: Number(conn.config.port || "3306"),

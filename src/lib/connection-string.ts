@@ -4,7 +4,7 @@ export function generateConnectionString(
   conn: ConnectionStoreItem,
   hideSecret = true,
 ): string {
-  if (conn.type === "mysql") {
+  if (conn.type === "mysql" || conn.type === "dolt") {
     return [
       "mysql://",
       conn.config.username,

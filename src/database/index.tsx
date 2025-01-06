@@ -1,4 +1,4 @@
-import { Toolbar, ToolbarDropdown } from "@/components/toolbar";
+import { Toolbar } from "@/components/toolbar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,7 +28,6 @@ import {
   LucideCopy,
   LucideMoreHorizontal,
   LucidePencil,
-  LucidePlus,
   LucideTrash,
 } from "lucide-react";
 import { AnimatedRouter } from "@/components/animated-router";
@@ -58,15 +57,7 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import ImportConnectionStringRoute from "./import-connection-string";
 import useNavigateToRoute from "@/hooks/useNavigateToRoute";
-
-const connectionTypeList = [
-  "mysql",
-  "postgres",
-  "sqlite",
-  "turso",
-  "cloudflare",
-  "starbase",
-];
+import AddConnectionDropdown from "./add-connection-dropdown";
 
 const restrictToVerticalAxis: Modifier = ({ transform }) => {
   return {
@@ -192,15 +183,6 @@ function ConnectionItem({
                 Connect
               </DropdownMenuItem>
 
-              <DropdownMenuItem
-                inset
-                onClick={() => {
-                  window.outerbaseIpc.connect(item, true);
-                }}
-              >
-                Connect with debugger
-              </DropdownMenuItem>
-
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => {
@@ -272,8 +254,6 @@ function ConnectionListRoute() {
   const [deletingConnectionId, setDeletingConnectionId] =
     useState<ConnectionStoreItem | null>(null);
 
-  const navigate = useNavigate();
-
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
 
@@ -292,35 +272,7 @@ function ConnectionListRoute() {
   return (
     <div className="flex h-full w-full flex-col">
       <Toolbar>
-        <ToolbarDropdown text="Add Connection" icon={LucidePlus}>
-          <DropdownMenuItem
-            onClick={() => {
-              navigate("/connection/import");
-            }}
-          >
-            <LucidePlus className="h-4 w-4" />
-            Import Connection String
-          </DropdownMenuItem>
-
-          <DropdownMenuSeparator />
-
-          {connectionTypeList.map((type) => {
-            const config = connectionTypeTemplates[type];
-            const IconComponent = config?.icon ?? MySQLIcon;
-
-            return (
-              <DropdownMenuItem
-                key={type}
-                onClick={() => {
-                  navigate(`/connection/create/${type}`);
-                }}
-              >
-                <IconComponent className="h-4 w-4" />
-                {connectionTypeTemplates[type]?.label ?? type}
-              </DropdownMenuItem>
-            );
-          })}
-        </ToolbarDropdown>
+        <AddConnectionDropdown />
       </Toolbar>
 
       {deletingConnectionId && (

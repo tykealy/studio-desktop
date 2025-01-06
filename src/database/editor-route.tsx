@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import useGoback from "@/hooks/useGoback";
 import { LucideLoader } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+
 export function ConnectionCreateUpdateRoute() {
   const { type, connectionId } = useParams<{
     type: string;

@@ -60,7 +60,13 @@ export function bindDockerIpc(main: MainWindow) {
   ) {
     console.log("pulling", data);
     return await new Promise((resolve, reject) => {
-      docker.pull(`${data.type}:${data.version}`, {}, (err, stream) => {
+      let imageName = data.type;
+
+      if (data.type === "dolt") {
+        imageName = "dolthub/dolt-sql-server";
+      }
+
+      docker.pull(`${imageName}:${data.version}`, {}, (err, stream) => {
         if (err) reject(err);
 
         if (!stream) {
@@ -139,6 +145,19 @@ export function bindDockerIpc(main: MainWindow) {
           HostConfig: {
             PortBindings: { "3306/tcp": [{ HostPort: `${data.config.port}` }] },
             Binds: [`${volume}:/var/lib/mysql`],
+          },
+        });
+      } else if (data.type === "dolt") {
+        const volume = getUserDataPath(`vol/${data.id}`);
+        console.log(data);
+
+        await docker.createContainer({
+          name: data.id,
+          Image: `dolthub/dolt-sql-server:${data.version}`,
+          ExposedPorts: { "3306/tcp": {} },
+          HostConfig: {
+            PortBindings: { "3306/tcp": [{ HostPort: `${data.config.port}` }] },
+            Binds: [`${volume}:/var/lib/dolt`],
           },
         });
       } else {

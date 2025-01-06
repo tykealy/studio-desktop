@@ -1,6 +1,7 @@
 import { ConnectionEditorTemplate } from "@/database/editor";
 import {
   CloudflareIcon,
+  DoltIcon,
   MySQLIcon,
   PostgreIcon,
   StarbaseIcon,
@@ -83,6 +84,17 @@ export const connectionTypeTemplates: Record<string, ConnectionTypeTemplate> = {
       username: "root",
     },
   },
+  dolt: {
+    name: "dolt",
+    label: "Dolt",
+    template: genericTemplate,
+    icon: DoltIcon,
+    defaultValue: {
+      host: "localhost",
+      port: "3306",
+      username: "root",
+    },
+  },
   postgres: {
     name: "postgres",
     label: "PostgreSQL",
@@ -122,7 +134,7 @@ export const connectionTypeTemplates: Record<string, ConnectionTypeTemplate> = {
   },
   cloudflare: {
     name: "cloudflare",
-    label: "Cloudflare",
+    label: "Cloudflare D1",
     icon: CloudflareIcon,
     defaultValue: {
       host: "",

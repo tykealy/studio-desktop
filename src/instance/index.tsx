@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { MySQLIcon, PostgreIcon } from "@/lib/outerbase-icon";
+import { DoltIcon, MySQLIcon, PostgreIcon } from "@/lib/outerbase-icon";
 import {
   LucideLoader,
   LucideMoreHorizontal,
@@ -30,6 +30,7 @@ import { PostgresInstance } from "./postgres-instance";
 import { Toolbar, ToolbarButton, ToolbarDropdown } from "@/components/toolbar";
 import { type PullImageProgress } from "electron/ipc/docker";
 import { parseSafeJson } from "@/lib/json-help";
+import { DoltInstance } from "./dolt-instance";
 
 function convertByteToMBString(byte: number) {
   return `${(byte / 1024 / 1024).toFixed(2)}mb`;
@@ -205,6 +206,10 @@ function InstanceListRoute() {
             <MySQLIcon className="h-4 w-4" />
             MySQL
           </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => navigate("/instance/create/dolt")}>
+            <DoltIcon className="h-4 w-4" />
+            Dolt
+          </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => navigate("/instance/create/postgres")}
           >
@@ -226,12 +231,19 @@ function InstanceListRoute() {
         {dbInstanceList.map((db) => {
           const container = containers.find((c) => c.Names[0] === `/${db.id}`);
           const isRunning = container?.State?.includes("running");
+          let DbIcon = MySQLIcon;
+
+          if (db.type === "dolt") {
+            DbIcon = DoltIcon;
+          } else if (db.type === "postgres") {
+            DbIcon = PostgreIcon;
+          }
 
           return (
             <div className="flex gap-4 border-b p-4" key={db.id}>
               <div className="flex">
                 <div className="relative h-10 w-10">
-                  <MySQLIcon className="h-10 w-10" />
+                  <DbIcon className="h-10 w-10" />
                   <div
                     className={cn(
                       "absolute bottom-0 right-0 h-3 w-3 rounded-full",
@@ -422,6 +434,10 @@ export default function InstanceTab() {
             <Route
               path="/instance/create/mysql"
               Component={withAnimation(MySQLInstance)}
+            />
+            <Route
+              path="/instance/create/dolt"
+              Component={withAnimation(DoltInstance)}
             />
             <Route
               path="/instance/create/postgres"

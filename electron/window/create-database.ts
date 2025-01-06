@@ -38,6 +38,8 @@ export function createDatabaseWindow(ctx: {
 
   if (ctx.conn.type === "mysql") {
     dbWindow.loadURL(`${STUDIO_ENDPOINT}/mysql?${queryString}`);
+  } else if (ctx.conn.type === "dolt") {
+    dbWindow.loadURL(`${STUDIO_ENDPOINT}/dolt?${queryString}`);
   } else if (ctx.conn.type === "postgres") {
     dbWindow.loadURL(`${STUDIO_ENDPOINT}/postgres?${queryString}`);
   } else if (ctx.conn.type === "starbase" || ctx.conn.type === "cloudflare") {
