@@ -89,7 +89,7 @@ export default function ImportConnectionStringRoute() {
               className={cn(
                 "flex items-center gap-2 rounded border-2 p-2 px-4 text-sm font-semibold",
                 mysqlConnectionType === "mysql"
-                  ? "border-blue-500 bg-blue-200"
+                  ? "border-blue-500 bg-blue-200 text-black"
                   : "",
               )}
               onClick={() => {
@@ -103,7 +103,7 @@ export default function ImportConnectionStringRoute() {
               className={cn(
                 "flex items-center gap-2 rounded border-2 p-2 px-4 text-sm font-semibold",
                 mysqlConnectionType === "dolt"
-                  ? "border-green-500 bg-green-200"
+                  ? "border-green-500 bg-green-200 text-black"
                   : "hover:border-green-500",
               )}
               onClick={() => {
