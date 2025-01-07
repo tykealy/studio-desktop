@@ -89,12 +89,7 @@ export function bindMenuIpc(main: MainWindow) {
             label: "New Connection",
             submenu: [
               {
-                label: "MySQL",
-                click: () => onOpenConnectionWindow("mysql"),
-              },
-              {
-                label: "PostgreSQL",
-                click: () => onOpenConnectionWindow("postgres"),
+                type: "separator",
               },
               {
                 label: "SQLite",
@@ -105,12 +100,30 @@ export function bindMenuIpc(main: MainWindow) {
                 click: () => onOpenConnectionWindow("turso"),
               },
               {
-                label: "Cloudflare",
+                label: "Cloudflare D1",
                 click: () => onOpenConnectionWindow("cloudflare"),
               },
               {
                 label: "Starbase",
                 click: () => onOpenConnectionWindow("starbase"),
+              },
+              {
+                type: "separator",
+              },
+              {
+                label: "MySQL (beta)",
+                click: () => onOpenConnectionWindow("mysql"),
+              },
+              {
+                label: "Dolt (beta)",
+                click: () => onOpenConnectionWindow("dolt"),
+              },
+              {
+                type: "separator",
+              },
+              {
+                label: "PostgreSQL (beta)",
+                click: () => onOpenConnectionWindow("postgres"),
               },
             ],
           },
@@ -121,6 +134,15 @@ export function bindMenuIpc(main: MainWindow) {
             label: "Open Recent",
             enabled: connSubMenu.length > 0,
             submenu: connSubMenu,
+          },
+          {
+            type: "separator",
+          },
+          {
+            label: "Import Connection String",
+            click: () => {
+              main.navigate("/connection/import");
+            },
           },
           {
             type: "separator",
