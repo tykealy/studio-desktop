@@ -2,10 +2,11 @@ import pkg from "./../package.json";
 import InstanceTab from "./instance";
 import DatabaseTab from "./database";
 import { Tab } from "./components/tabs";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import UpdateBar from "./components/update-bar";
 import { Toaster } from "./components/ui/toaster";
 import ThemeProvider from "./context/theme-provider";
+import { sendAnalyticEvents } from "./lib/tracker";
 
 function Main() {
   const [selected, setSelected] = useState("connection");
@@ -16,6 +17,17 @@ function Main() {
       { name: "Instance", key: "instance", component: <InstanceTab /> },
     ];
   }, []);
+
+  useEffect(() => {
+    sendAnalyticEvents([
+      {
+        name: "page_view",
+        data: {
+          path: "/desktop/" + selected,
+        },
+      },
+    ]);
+  }, [selected]);
 
   return (
     <>

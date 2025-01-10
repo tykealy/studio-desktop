@@ -15,6 +15,7 @@ import electronUpdater, { type AppUpdater } from "electron-updater";
 import { type ConnectionStoreItem } from "@/lib/conn-manager-store";
 import { createDatabaseWindow } from "./window/create-database";
 import { bindMenuIpc, bindDockerIpc } from "./ipc";
+import { bindAnalyticIpc } from "./ipc/analytics";
 
 export function getAutoUpdater(): AppUpdater {
   // Using destructuring to access autoUpdater due to the CommonJS module of 'electron-updater'.
@@ -137,3 +138,5 @@ ipcMain.handle("set-setting", (_, key, value) => {
 ipcMain.on("navigate", (event, route: string) => {
   event.sender.send("navigate-to", route);
 });
+
+bindAnalyticIpc();

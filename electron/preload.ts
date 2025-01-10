@@ -8,6 +8,7 @@ import {
 import { type ConnectionStoreItem } from "@/lib/conn-manager-store";
 import { type ContainerInspectInfo, type ContainerInfo } from "dockerode";
 import { Result } from "./drivers/base";
+import type { TrackEventItem } from "./ipc/analytics";
 
 // Get connection id
 const connectionId = process.argv
@@ -118,6 +119,10 @@ const outerbaseIpc = {
       ipcRenderer.invoke("get-setting", key),
     set: <T = string>(key: string, value: T): Promise<void> =>
       ipcRenderer.invoke("set-setting", key, value),
+  },
+
+  sendAnalyticEvents(deviceId: string, events: TrackEventItem[]) {
+    return ipcRenderer.invoke("send-analytic", deviceId, events);
   },
 };
 
