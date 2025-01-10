@@ -39,7 +39,22 @@ export function ConnectionCreateUpdateRoute() {
   });
 
   const onSaveClicked = useCallback(() => {
-    ConnectionStoreManager.save(value);
+    const timestamp = Date.now();
+    let saveConn: ConnectionStoreItem;
+    if (!value.id) {
+      saveConn = {
+        ...value,
+        createdAt: timestamp,
+        lastConnectedAt: 0,
+      };
+    } else {
+      saveConn = {
+        ...value,
+        updatedAt: timestamp,
+        lastConnectedAt: timestamp,
+      };
+    }
+    ConnectionStoreManager.save(saveConn);
     goBack();
   }, [value, goBack]);
 

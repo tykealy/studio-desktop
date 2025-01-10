@@ -20,6 +20,9 @@ export interface ConnectionStoreItem {
   id: string;
   name: string;
   type: string;
+  createdAt?: number;
+  updatedAt?: number;
+  lastConnectedAt?: number;
   config: ConnectionStoreItemConfig;
 }
 
@@ -255,10 +258,11 @@ export class ConnectionStoreManager {
   }
 
   static duplicate(item: ConnectionStoreItem) {
-    const newItem = {
+    const newItem: ConnectionStoreItem = {
       ...item,
       id: crypto.randomUUID(),
       name: `${item.name} (Copy)`,
+      createdAt: Date.now(),
     };
 
     // Make it below the original item
@@ -279,11 +283,19 @@ export class ConnectionStoreManager {
     } else {
       list[index] = item;
     }
-
-    localStorage.setItem("connections", JSON.stringify(list));
+    const finalData = this.sort(list);
+    localStorage.setItem("connections", JSON.stringify(finalData));
   }
 
   static saveAll(items: ConnectionStoreItem[]) {
     localStorage.setItem("connections", JSON.stringify(items));
+  }
+
+  static sort(items: ConnectionStoreItem[]) {
+    return items.sort((a, b) => {
+      const aDate = a.lastConnectedAt || 0;
+      const bDate = b.lastConnectedAt || 0;
+      return bDate - aDate;
+    });
   }
 }

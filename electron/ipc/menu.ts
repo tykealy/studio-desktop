@@ -22,7 +22,7 @@ export function bindMenuIpc(main: MainWindow) {
     function generateSubMenu() {
       const MAX_VISIBLE_CONNECTIONS = 10;
 
-      const visibleConn = connections.slice(-MAX_VISIBLE_CONNECTIONS);
+      const visibleConn = connections.slice(0, MAX_VISIBLE_CONNECTIONS);
       const remainConn = connections.slice(MAX_VISIBLE_CONNECTIONS);
 
       const connMenu: MenuItemConstructorOptions["submenu"] = visibleConn.map(
