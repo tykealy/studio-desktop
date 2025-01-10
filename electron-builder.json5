@@ -11,9 +11,15 @@
   afterSign: "scripts/notarize.cjs",
   mac: {
     notarize: false,
-    "target": [
-      "dmg",
-      "zip"
+    target: [
+      {
+        target: "dmg",
+        arch: ["universal"],
+      },
+      {
+        target: "zip",
+        arch: ["universal"],
+      },
     ],
     artifactName: "outerbase-mac-${version}.${ext}",
   },
