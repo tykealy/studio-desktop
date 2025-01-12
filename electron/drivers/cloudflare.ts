@@ -1,5 +1,5 @@
+import { transformCloudflareD1 } from "@outerbase/sdk-transform";
 import { Result } from "./base";
-import { transformArrayBasedResult } from "./transformer";
 
 interface CloudflareResult {
   results: {
@@ -66,27 +66,6 @@ export default class CloudflareDriver {
       throw new Error(json.errors[0].message);
     }
 
-    return json.result.map((result) => {
-      return {
-        ...transformArrayBasedResult(
-          result.results.columns,
-          (header) => {
-            return {
-              name: header,
-              displayName: header,
-              originalType: null,
-            };
-          },
-          result.results.rows,
-        ),
-        stat: {
-          rowsAffected: result.meta.changes,
-          rowsRead: result.meta.rows_read,
-          rowsWritten: result.meta.rows_written,
-          queryDurationMs: result.meta.duration,
-        },
-        lastInsertRowid: result.meta.last_row_id,
-      };
-    });
+    return json.result.map(transformCloudflareD1);
   }
 }
