@@ -61,6 +61,7 @@
     @apply border-border;
   }
   body {
+    user-select: none;
     @apply bg-background text-foreground;
   }
 }
