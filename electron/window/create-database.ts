@@ -23,6 +23,7 @@ export function createDatabaseWindow(ctx: {
   const queryString = new URLSearchParams({
     name: ctx.conn.name,
     theme,
+    color: ctx.conn.color || "",
   }).toString();
 
   windowMap.set(ctx.conn.id, dbWindow);
