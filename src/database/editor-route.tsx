@@ -34,6 +34,7 @@ export function ConnectionCreateUpdateRoute() {
       id: crypto.randomUUID(),
       name: "Unnamed Connection",
       type: type!,
+      color: undefined,
       config: structuredClone({ ...template.defaultValue, ...locationState }),
     };
   });
@@ -95,8 +96,14 @@ export function ConnectionCreateUpdateRoute() {
         />
       </div>
       <div className="flex gap-2 border-t px-8 py-4">
-        <Button onClick={onSaveClicked}>Save</Button>
-        <Button onClick={onConnectClicked} className="gap-0">
+        <Button variant="secondary" onClick={onSaveClicked}>
+          Save
+        </Button>
+        <Button
+          onClick={onConnectClicked}
+          className="gap-0"
+          variant="secondary"
+        >
           {connecting && (
             <LucideLoader
               className="mr-2 inline-block h-4 w-4 animate-spin"

@@ -117,7 +117,9 @@ export default function ImportConnectionStringRoute() {
         )}
 
         <div className="mt-4">
-          <Button onClick={onImportClick}>Import</Button>
+          <Button variant="secondary" onClick={onImportClick}>
+            Import
+          </Button>
         </div>
       </div>
     </div>

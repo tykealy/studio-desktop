@@ -1,13 +1,22 @@
 import FileInput from "@/components/file-input";
 import InputGroup from "@/components/input-group";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ConnectionStoreItem } from "@/lib/conn-manager-store";
-import { cn } from "@/lib/utils";
+import { cn, getDatabaseColor } from "@/lib/utils";
 import type { OpenDialogOptions } from "electron";
 import { produce } from "immer";
+import { CheckIcon, ChevronDown } from "lucide-react";
+import { useState } from "react";
 
 interface ConnectionEditorTemplateItem {
   name: keyof ConnectionStoreItem["config"];
@@ -15,6 +24,7 @@ interface ConnectionEditorTemplateItem {
   type: "text" | "password" | "file" | "textarea" | "checkbox";
   placeholder?: string;
   size?: string;
+  color?: string;
   required?: boolean;
   fileOption?: OpenDialogOptions;
 }
@@ -31,27 +41,71 @@ interface ConnectionEditorProps {
   onChange: (value: ConnectionStoreItem) => void;
 }
 
+function DotColor({ colorName }: { colorName: string }) {
+  return (
+    <div className={cn(`h-3 w-3 rounded-2xl`, getDatabaseColor(colorName))} />
+  );
+}
 export default function ConnectionEditor({
   value,
   onChange,
   template,
 }: ConnectionEditorProps) {
+  const [visible, setVisible] = useState(false);
+  const [selectedColor, setSelectedColor] = useState(value.color);
+
+  const colors = ["red", "blue", "green", "yellow", "purple", "gray"];
+
   return (
     <div className="flex flex-col gap-4">
       <InputGroup>
         <Label>Name</Label>
-        <Input
-          autoFocus
-          spellCheck={false}
-          value={value.name}
-          onChange={(e) => {
-            onChange(
-              produce<ConnectionStoreItem>(value, (draft) => {
-                draft.name = e.target.value;
-              }),
-            );
-          }}
-        />
+        <div className="flex flex-row gap-3">
+          <Input
+            autoFocus
+            spellCheck={false}
+            value={value.name}
+            onChange={(e) => {
+              onChange(
+                produce<ConnectionStoreItem>(value, (draft) => {
+                  draft.name = e.target.value;
+                }),
+              );
+            }}
+          />
+          <DropdownMenu modal={false} open={visible} onOpenChange={setVisible}>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="pl-2 pr-2">
+                {selectedColor && <DotColor colorName={selectedColor} />}
+                <span>Choose color</span>
+                <ChevronDown />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="gap-2">
+              {colors.map((color, index) => {
+                const active = color === selectedColor;
+                return (
+                  <DropdownMenuItem
+                    onClick={() => {
+                      onChange(
+                        produce<ConnectionStoreItem>(value, (draft) => {
+                          draft.color = color;
+                        }),
+                      );
+                      setSelectedColor(color);
+                    }}
+                    key={index}
+                  >
+                    <DotColor colorName={color} />
+                    <span> {color}</span>
+                    <div className="flex-1" />
+                    {active && <CheckIcon />}
+                  </DropdownMenuItem>
+                );
+              })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </InputGroup>
 
       {template.map((row, rowIdx) => {

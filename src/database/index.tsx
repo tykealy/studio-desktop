@@ -1,329 +1,54 @@
 import { Toolbar } from "@/components/toolbar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  closestCenter,
-  DndContext,
-  DragEndEvent,
-  KeyboardSensor,
-  Modifier,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  useSortable,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { MySQLIcon } from "@/lib/outerbase-icon";
-import {
-  LucideCopy,
-  LucideMoreHorizontal,
-  LucidePencil,
-  LucideTrash,
-} from "lucide-react";
 import { AnimatedRouter } from "@/components/animated-router";
 import { ConnectionCreateUpdateRoute } from "./editor-route";
-import { useNavigate } from "react-router-dom";
-import { CSS } from "@dnd-kit/utilities";
-import {
-  ConnectionStoreItem,
-  ConnectionStoreManager,
-  connectionTypeTemplates,
-} from "@/lib/conn-manager-store";
-import { Dispatch, SetStateAction, useState } from "react";
-import { generateConnectionString } from "@/lib/connection-string";
-import { Button } from "@/components/ui/button";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { AnimatePresence, motion } from "framer-motion";
-import { useToast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
+import { ConnectionStoreManager } from "@/lib/conn-manager-store";
+import { useMemo, useState } from "react";
 import ImportConnectionStringRoute from "./import-connection-string";
 import useNavigateToRoute from "@/hooks/useNavigateToRoute";
 import AddConnectionDropdown from "./add-connection-dropdown";
-
-const restrictToVerticalAxis: Modifier = ({ transform }) => {
-  return {
-    ...transform,
-    x: 0,
-  };
-};
-
-function DeletingModal({
-  data,
-  onClose,
-  onSuccess,
-}: {
-  data: ConnectionStoreItem;
-  onClose: () => void;
-  onSuccess: () => void;
-}) {
-  return (
-    <AlertDialog
-      open
-      onOpenChange={(openState) => {
-        if (openState === false) {
-          onClose();
-        }
-      }}
-    >
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Delete Connection</AlertDialogTitle>
-          <AlertDialogDescription>
-            Are you sure you want to delete the connection{" "}
-            <span className="font-semibold">{data.name}</span>?
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-
-        <AlertDialogFooter>
-          <AlertDialogCancel onClick={onClose}>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={onSuccess}>Continue</AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  );
-}
-
-function ConnectionItem({
-  item,
-  selectedConnection,
-  setSelectedConnection,
-  setConnectionList,
-  setDeletingConnectionId,
-}: {
-  item: ConnectionStoreItem;
-  selectedConnection?: string;
-  setSelectedConnection: Dispatch<SetStateAction<string>>;
-  setConnectionList: Dispatch<SetStateAction<ConnectionStoreItem[]>>;
-  setDeletingConnectionId: Dispatch<SetStateAction<ConnectionStoreItem | null>>;
-}) {
-  const [isMenuOpen, setMenuOpen] = useState(false);
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: item.id });
-
-  const { toast } = useToast();
-  const navigate = useNavigate();
-  const typeConfig = connectionTypeTemplates[item.type];
-  const IconComponent = typeConfig?.icon ?? MySQLIcon;
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-
-  function onConnect(debuggerMode = false) {
-    window.outerbaseIpc
-      .connect(item, debuggerMode)
-      .then(() => {
-        ConnectionStoreManager.save({ ...item, lastConnectedAt: Date.now() });
-      })
-      .finally(() => {
-        setConnectionList(ConnectionStoreManager.list());
-      });
-  }
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...(!isMenuOpen && listeners)}
-      onMouseDown={() => {
-        setSelectedConnection(item.id);
-      }}
-      onDoubleClick={() => onConnect()}
-    >
-      <motion.div
-        initial={{ transform: "translateX(100%)" }}
-        animate={{ transform: "translateX(0)" }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
-        exit={{ transform: "translateX(100%)" }}
-        key={item.id}
-        className={cn(
-          "flex cursor-pointer items-center gap-4 border-b p-4 hover:bg-gray-100 dark:hover:bg-neutral-800",
-          selectedConnection === item.id
-            ? "bg-gray-100 dark:bg-neutral-900"
-            : "bg-background",
-        )}
-      >
-        <IconComponent className="h-8 w-8" />
-        <div className="flex flex-1 flex-col gap-1 text-sm">
-          <div className="font-semibold">{item.name}</div>
-          <div className="font-mono text-gray-500">
-            {generateConnectionString(item)}
-          </div>
-        </div>
-        <div>
-          <DropdownMenu
-            modal={false}
-            open={isMenuOpen}
-            onOpenChange={setMenuOpen}
-          >
-            <DropdownMenuTrigger asChild>
-              <Button variant={"ghost"} size={"icon"}>
-                <LucideMoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem inset onClick={() => onConnect()}>
-                Connect
-              </DropdownMenuItem>
-
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => {
-                  navigate(`/connection/edit/${item.type}/${item.id}`);
-                }}
-              >
-                <LucidePencil className="h-4 w-4" />
-                Edit
-              </DropdownMenuItem>
-
-              <DropdownMenuItem
-                onClick={() => {
-                  setConnectionList(ConnectionStoreManager.duplicate(item));
-                }}
-                inset
-              >
-                Duplicate
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-
-              <DropdownMenuItem
-                onClick={() => {
-                  window.navigator.clipboard.writeText(
-                    generateConnectionString(item, false),
-                  );
-                  toast({
-                    title: "Connection string copied to clipboard",
-                    duration: 1000,
-                  });
-                }}
-              >
-                <LucideCopy className="h-4 w-4" />
-                Copy Connection String
-              </DropdownMenuItem>
-
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => {
-                  setDeletingConnectionId(item);
-                }}
-              >
-                <LucideTrash className="h-4 w-4" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </motion.div>
-    </div>
-  );
-}
+import ConnectionList from "@/components/database/connection-list";
+import { Input } from "@/components/ui/input";
 
 function ConnectionListRoute() {
   useNavigateToRoute();
-
+  const [search, setSearch] = useState("");
   const [connectionList, setConnectionList] = useState(() => {
     return ConnectionStoreManager.list();
   });
 
-  const [selectedConnection, setSelectedConnection] = useState("");
-
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
-  );
-
-  const [deletingConnectionId, setDeletingConnectionId] =
-    useState<ConnectionStoreItem | null>(null);
-
-  function handleDragEnd(event: DragEndEvent) {
-    const { active, over } = event;
-
-    if (!over) {
-      return;
+  const connections = useMemo(() => {
+    if (search) {
+      return connectionList.filter((conn) =>
+        conn.name.toLowerCase().includes(search.toLowerCase()),
+      );
     }
-
-    if (active?.id !== over?.id) {
-      setConnectionList((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active?.id);
-        const newIndex = items.findIndex((item) => item.id === over?.id);
-        const newList = arrayMove(items, oldIndex, newIndex);
-
-        ConnectionStoreManager.saveAll(newList);
-        return newList;
-      });
-    }
-  }
+    return connectionList;
+  }, [connectionList, search]);
 
   return (
     <div className="flex h-full w-full flex-col">
       <Toolbar>
         <AddConnectionDropdown />
-      </Toolbar>
-
-      {deletingConnectionId && (
-        <DeletingModal
-          data={deletingConnectionId}
-          onClose={() => {
-            setDeletingConnectionId(null);
-          }}
-          onSuccess={() => {
-            setConnectionList(
-              ConnectionStoreManager.remove(deletingConnectionId.id),
-            );
-            setDeletingConnectionId(null);
+        <Input
+          value={search}
+          placeholder="Search..."
+          className="w-1/3"
+          onChange={(e) => {
+            e.preventDefault();
+            setSearch(e.currentTarget.value);
           }}
         />
+      </Toolbar>
+      {!!search && connections.length === 0 ? (
+        <div className="flex flex-1 justify-center p-3 text-sm text-neutral-600">
+          Search connection not found.
+        </div>
+      ) : (
+        <ConnectionList
+          data={connections}
+          setConnectionList={setConnectionList}
+        />
       )}
-
-      <div className="flex-1 overflow-y-auto overflow-x-hidden">
-        <AnimatePresence initial={false}>
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
-            modifiers={[restrictToVerticalAxis]}
-          >
-            <SortableContext
-              items={connectionList}
-              strategy={verticalListSortingStrategy}
-            >
-              {connectionList.map((item) => (
-                <ConnectionItem
-                  key={item.id}
-                  item={item}
-                  selectedConnection={selectedConnection}
-                  setSelectedConnection={setSelectedConnection}
-                  setConnectionList={setConnectionList}
-                  setDeletingConnectionId={setDeletingConnectionId}
-                />
-              ))}
-            </SortableContext>
-          </DndContext>
-        </AnimatePresence>
-      </div>
     </div>
   );
 }
