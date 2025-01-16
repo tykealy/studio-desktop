@@ -25,15 +25,27 @@ import { generateConnectionString } from "@/lib/connection-string";
 import { cn, getDatabaseColor } from "@/lib/utils";
 import { DispatchState } from "./type";
 import useTimeAgo from "@/hooks/useTimeAgo";
+import { HighlightText } from "../ui/highlight";
+
+const BeautifyDatabaseName: Record<string, string> = {
+  mysql: "MySQL",
+  postgres: "Postgres",
+  sqlite: "SQLite",
+  mssql: "MSSQL",
+  mongodb: "MongoDB",
+  dolt: "Dolt",
+};
 
 export default function ConnectionItem({
   item,
+  highlight,
   selectedConnection,
   setSelectedConnection,
   setConnectionList,
   setDeletingConnectionId,
 }: {
   item: ConnectionStoreItem;
+  highlight?: string;
   selectedConnection?: string;
   setSelectedConnection: DispatchState<string>;
   setConnectionList: DispatchState<ConnectionStoreItem[]>;
@@ -60,37 +72,40 @@ export default function ConnectionItem({
   }
   return (
     <div
+      title={item.name}
       onMouseDown={() => {
         setSelectedConnection(item.id);
       }}
       onDoubleClick={() => onConnect()}
       className={cn(
-        "relative h-32 cursor-pointer gap-4 rounded-lg border p-3 pr-2 hover:bg-gray-100 dark:hover:bg-neutral-800",
+        "group relative cursor-pointer gap-4 rounded-lg border bg-background p-3 pr-2 transition-colors hover:border-gray-300 dark:hover:border-zinc-700 dark:hover:bg-zinc-900 xl:w-[300px]",
         selectedConnection === item.id
-          ? "bg-gray-100 dark:bg-neutral-900"
+          ? "outline outline-1 outline-gray-400 dark:border-zinc-700 dark:bg-zinc-900 dark:outline-0 dark:outline-zinc-800"
           : "bg-background",
       )}
     >
       <div className="flex flex-1 gap-3">
         <div
           className={cn(
-            "flex h-14 w-14 items-center justify-center rounded-sm",
+            "flex h-12 w-12 items-center justify-center rounded-lg",
             item.color
               ? getDatabaseColor(item.color)
-              : "bg-gray-200 dark:bg-neutral-800",
+              : "bg-gray-100 dark:bg-neutral-800",
           )}
         >
           <IconComponent
             className={cn("h-8 w-8", item.color ? "text-white" : undefined)}
           />
         </div>
-        <div className="flex flex-1 flex-col gap-1 text-sm">
-          <div className="line-clamp-2 font-semibold">{item.name}</div>
-          <div className="font-mono capitalize text-neutral-600">
-            {item.type}
+        <div className="flex flex-1 flex-col justify-center leading-6">
+          <div className="text-md line-clamp-1 font-bold">
+            <HighlightText text={item.name} highlight={highlight} />
+          </div>
+          <div className="text-xs text-muted-foreground">
+            {BeautifyDatabaseName[item.type] ?? item.type}
           </div>
         </div>
-        <div>
+        <div className="opacity-0 group-hover:opacity-100">
           <DropdownMenu
             modal={false}
             open={isMenuOpen}
@@ -154,16 +169,14 @@ export default function ConnectionItem({
           </DropdownMenu>
         </div>
       </div>
-      {(!!item.updatedAt || !!item.lastConnectedAt) && (
-        <div className="absolute bottom-3 text-sm text-neutral-600">
-          {item?.updatedAt === item?.lastConnectedAt
-            ? "Updated"
-            : "Last connected"}{" "}
-          {item?.lastConnectedAt
-            ? timeAgo(item?.lastConnectedAt, true)
-            : "unknown"}
-        </div>
-      )}
+
+      <div className="h-4"> </div>
+
+      <div className="h-4 text-xs text-neutral-600">
+        {item.lastConnectedAt
+          ? `Last connected ${timeAgo(item.lastConnectedAt)}`
+          : " "}
+      </div>
     </div>
   );
 }

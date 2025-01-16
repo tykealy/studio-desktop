@@ -9,10 +9,15 @@ import { DispatchState } from "./type";
 
 interface Props {
   data: ConnectionStoreItem[];
+  searchText?: string;
   setConnectionList: DispatchState<ConnectionStoreItem[]>;
 }
 
-export default function ConnectionList({ data, setConnectionList }: Props) {
+export default function ConnectionList({
+  data,
+  setConnectionList,
+  searchText,
+}: Props) {
   const [selectedConnection, setSelectedConnection] = useState("");
   const [deletingConnectionId, setDeletingConnectionId] =
     useState<ConnectionStoreItem | null>(null);
@@ -24,7 +29,7 @@ export default function ConnectionList({ data, setConnectionList }: Props) {
     }
   }
   return (
-    <div className="flex-1 overflow-y-auto overflow-x-hidden">
+    <div className="flex-1 overflow-y-auto overflow-x-hidden bg-gray-100 dark:bg-black">
       {deletingConnectionId && (
         <DeletingConnectionModal
           data={deletingConnectionId}
@@ -34,11 +39,12 @@ export default function ConnectionList({ data, setConnectionList }: Props) {
           onSuccess={onDeletConnection}
         />
       )}
-      <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      <div className="grid flex-1 grid-cols-1 gap-4 p-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:flex xl:flex-wrap">
         {data.map((item) => (
           <ConnectionItem
             key={item.id}
             item={item}
+            highlight={searchText}
             setConnectionList={setConnectionList}
             selectedConnection={selectedConnection}
             setSelectedConnection={setSelectedConnection}

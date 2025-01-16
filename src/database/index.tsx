@@ -7,7 +7,6 @@ import ImportConnectionStringRoute from "./import-connection-string";
 import useNavigateToRoute from "@/hooks/useNavigateToRoute";
 import AddConnectionDropdown from "./add-connection-dropdown";
 import ConnectionList from "@/components/database/connection-list";
-import { Input } from "@/components/ui/input";
 
 function ConnectionListRoute() {
   useNavigateToRoute();
@@ -29,10 +28,12 @@ function ConnectionListRoute() {
     <div className="flex h-full w-full flex-col">
       <Toolbar>
         <AddConnectionDropdown />
-        <Input
+        <div className="flex-1"></div>
+        <input
+          type="text"
           value={search}
-          placeholder="Search..."
-          className="w-1/3"
+          placeholder="Search your connection..."
+          className="w-[300px] rounded bg-accent p-2 px-4 text-sm outline-0"
           onChange={(e) => {
             e.preventDefault();
             setSearch(e.currentTarget.value);
@@ -46,6 +47,7 @@ function ConnectionListRoute() {
       ) : (
         <ConnectionList
           data={connections}
+          searchText={search}
           setConnectionList={setConnectionList}
         />
       )}
