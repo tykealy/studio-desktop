@@ -22,6 +22,8 @@ export default defineConfig({
               external: [
                 "@libsql/client",
                 "@libsql/win32-x64-msvc",
+                "@libsql/darwin-arm64",
+                "@libsql/darwin-x64",
                 "electron-updater",
                 "dockerode",
                 "mysql2",
