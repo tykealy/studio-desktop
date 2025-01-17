@@ -9,7 +9,7 @@
     "dev": "vite",
     "build": "tsc && vite build && electron-builder",
     "build:win": "npm run build && electron-builder --win --config",
-    "build:mac-libsql-intel": "mkdir ./node_modules/@libsql/darwin-x64 && tar -xvzf ./prebuild/libsql-darwin-x64-0.5.0-pre.5.tgz -C ./node_modules/@libsql/darwin-x64",
+    "build:mac-libsql-intel": "cp -r ./prebuild/libsql-darwin-x64 ./node_modules/@libsql/darwin-x64",
     "build:mac": "npm run build:mac-libsql-intel && npm run build && electron-builder --mac --config",
     "build:linux": "npm run build && electron-builder --linux --config",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
