@@ -121,6 +121,21 @@ const outerbaseIpc = {
       ipcRenderer.invoke("set-setting", key, value),
   },
 
+  // expose docs ipc following remote save doc from web studio: https://github.com/outerbase/studio/blob/develop/src/drivers/saved-doc/remote-saved-doc.ts
+  docs: {
+    save(doc: unknown) {
+      return ipcRenderer.invoke("doc-save", connectionId, doc);
+    },
+
+    load(): Promise<unknown> {
+      return ipcRenderer.invoke("doc-load", connectionId);
+    },
+
+    delete(connId: string) {
+      return ipcRenderer.invoke("doc-delete", connId);
+    },
+  },
+
   sendAnalyticEvents(deviceId: string, events: TrackEventItem[]) {
     return ipcRenderer.invoke("send-analytic", deviceId, events);
   },
