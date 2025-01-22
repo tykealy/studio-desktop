@@ -2,12 +2,20 @@ import { ThemeType } from "@/context/theme-provider";
 import { ConnectionStoreItem } from "@/lib/conn-manager-store";
 import { BrowserWindow } from "electron";
 import { ConnectionPool } from "../connection-pool";
-import { STUDIO_ENDPOINT } from "../constants";
 import { getWindowConfig, isDev } from "../utils";
 import { MainWindow } from "./main-window";
 import { settings } from "../main";
+import { STUDIO_ENDPOINT } from "../constants";
 
 export const windowMap = new Map<string, BrowserWindow>();
+
+function getDatabaseType(type: string) {
+  if (type === "mysql") return "mysql";
+  if (type === "dolt") return "dolt";
+  if (type === "postgres") return "postgres";
+  if (type === "starbase" || type === "cloudflare") return "starbase";
+  return "sqlite";
+}
 
 export function createDatabaseWindow(ctx: {
   main: MainWindow;
@@ -37,17 +45,14 @@ export function createDatabaseWindow(ctx: {
     dbWindow.destroy();
   });
 
-  if (ctx.conn.type === "mysql") {
-    dbWindow.loadURL(`${STUDIO_ENDPOINT}/mysql?${queryString}`);
-  } else if (ctx.conn.type === "dolt") {
-    dbWindow.loadURL(`${STUDIO_ENDPOINT}/dolt?${queryString}`);
-  } else if (ctx.conn.type === "postgres") {
-    dbWindow.loadURL(`${STUDIO_ENDPOINT}/postgres?${queryString}`);
-  } else if (ctx.conn.type === "starbase" || ctx.conn.type === "cloudflare") {
-    dbWindow.loadURL(`${STUDIO_ENDPOINT}/starbase?${queryString}`);
-  } else {
-    dbWindow.loadURL(`${STUDIO_ENDPOINT}/sqlite?${queryString}`);
-  }
+  const EMBEDED_STUDIO_ENDPOINT =
+    process.env.STUDIO_ENDPOINT || STUDIO_ENDPOINT;
+
+  isDev && console.log(`STUDIO ENDPOINT=${EMBEDED_STUDIO_ENDPOINT}`);
+
+  const databaseType = getDatabaseType(ctx.conn.type);
+
+  dbWindow.loadURL(`${EMBEDED_STUDIO_ENDPOINT}/${databaseType}?${queryString}`);
 
   if (isDev || ctx.enableDebug) {
     dbWindow.webContents.openDevTools();
