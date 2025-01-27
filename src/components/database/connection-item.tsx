@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   ConnectionStoreItem,
   ConnectionStoreManager,
@@ -70,6 +70,13 @@ export default function ConnectionItem({
         setConnectionList(ConnectionStoreManager.list());
       });
   }
+
+  const lastConnectedAt = useMemo(() => {
+    if (item.lastConnectedAt) {
+      return timeAgo(item.lastConnectedAt);
+    }
+  }, [timeAgo, item]);
+
   return (
     <div
       title={item.name}
@@ -173,9 +180,7 @@ export default function ConnectionItem({
       <div className="h-4"> </div>
 
       <div className="h-4 text-xs text-neutral-600">
-        {item.lastConnectedAt
-          ? `Last connected ${timeAgo(item.lastConnectedAt)}`
-          : " "}
+        {lastConnectedAt ? `Last connected ${lastConnectedAt}` : " "}
       </div>
     </div>
   );

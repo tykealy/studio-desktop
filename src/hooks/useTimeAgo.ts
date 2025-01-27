@@ -1,9 +1,11 @@
+import { useCallback } from "react";
+
 export default function useTimeAgo() {
   /**
    * @param timestamp number of timestamps
    * @param addSuffix (optional)
    */
-  const timeAgo = (timestamp: number, addSuffix?: boolean) => {
+  const timeAgo = useCallback((timestamp: number, addSuffix?: boolean) => {
     if (timestamp < 10e9) {
       timestamp *= 1000;
     }
@@ -28,6 +30,6 @@ export default function useTimeAgo() {
     }
 
     return "just now";
-  };
+  }, []);
   return { timeAgo };
 }
