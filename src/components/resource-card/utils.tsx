@@ -6,6 +6,7 @@ import {
   PostgreIcon,
   RqliteIcon,
   SQLiteIcon,
+  TursoIcon,
 } from "@/lib/outerbase-icon";
 
 export function getDatabaseFriendlyName(type: string) {
@@ -33,7 +34,8 @@ export function getDatabaseIcon(type: string) {
   if (type === "cloudflare" || type === "cloudflare-d1") return CloudflareIcon;
   if (type === "valtown") return ValTownIcon;
   if (type === "starbasedb" || type === "starbase") return StarbaseIcon;
-  if (type === "libsql" || type === "turso") return SQLiteIcon;
+  if (type === "libsql") return SQLiteIcon;
+  if (type === "turso") return TursoIcon;
   if (type === "rqlite") return RqliteIcon;
 
   return Database;
