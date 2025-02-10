@@ -1,6 +1,6 @@
 import { ThemeType } from "@/context/theme-provider";
 import { ConnectionStoreItem } from "@/lib/conn-manager-store";
-import { BrowserWindow } from "electron";
+import { BrowserWindow, shell } from "electron";
 import { ConnectionPool } from "../connection-pool";
 import { getWindowConfig, isDev } from "../utils";
 import { MainWindow } from "./main-window";
@@ -43,6 +43,12 @@ export function createDatabaseWindow(ctx: {
     windowMap.delete(ctx.conn.id);
     ConnectionPool.close(ctx.conn.id);
     dbWindow.destroy();
+  });
+
+  // Open in the default web browser
+  dbWindow.webContents.setWindowOpenHandler(({ url }) => {
+    shell.openExternal(url);
+    return { action: "deny" }; // Prevent opening in Electron
   });
 
   const EMBEDED_STUDIO_ENDPOINT =
