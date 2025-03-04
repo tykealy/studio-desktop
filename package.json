@@ -21,7 +21,7 @@
     "@dnd-kit/sortable": "^9.0.0",
     "@electron/notarize": "^2.5.0",
     "@libsql/client": "^0.14.0",
-    "@outerbase/sdk-transform": "^1.0.1",
+    "@outerbase/sdk-transform": "^1.0.7",
     "@radix-ui/react-alert-dialog": "^1.1.2",
     "@radix-ui/react-checkbox": "^1.1.2",
     "@radix-ui/react-dropdown-menu": "^2.1.2",
