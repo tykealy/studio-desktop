@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import { useMemo, useState } from "react";
 import { Button } from "./ui/button";
-import { Sun, MoonStar } from "lucide-react";
+import { Sun, MoonStar,MonitorCog } from "lucide-react";
 import { useTheme } from "@/context/theme-provider";
 
 interface TabItemProps {
@@ -17,9 +17,9 @@ interface TabProps {
 }
 
 export function Tab({ tabs, selected, onChange }: TabProps) {
-  const { theme, toggleTheme } = useTheme();
+  const {theme, effectiveTheme, toggleTheme } = useTheme();
   const [mountedList] = useState<Set<string>>(() => new Set([selected]));
-  const logo = useMemo(() => (theme === "dark" ? "light" : "dark"), [theme]);
+  const logo = useMemo(() => (effectiveTheme === "dark" ? "light" : "dark"), [effectiveTheme]);
 
   const normalClassName =
     "p-2 border border-secondary border-b border-b-border px-4 flex items-center cursor-pointer";
@@ -46,7 +46,8 @@ export function Tab({ tabs, selected, onChange }: TabProps) {
         ))}
         <div className="flex flex-1 items-center justify-end gap-2 border-b pr-4">
           <Button onClick={() => toggleTheme()} variant="ghost">
-            {theme === "dark" ? <Sun /> : <MoonStar />}
+            {theme === "dark" ? <MoonStar /> : theme === "system" ? <MonitorCog /> : <Sun />}
+          
           </Button>
           <img
             src={`https://www.outerbase.com/downloads/brand/outerbase_${logo}.svg`}
