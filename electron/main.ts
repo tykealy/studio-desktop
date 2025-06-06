@@ -16,7 +16,8 @@ import { type ConnectionStoreItem } from "@/lib/conn-manager-store";
 import { createDatabaseWindow } from "./window/create-database";
 import { bindMenuIpc, bindDockerIpc, bindSavedDocIpc } from "./ipc";
 import { bindAnalyticIpc } from "./ipc/analytics";
-
+import { bindThemeIpc } from "./ipc/theme";
+  
 export function getAutoUpdater(): AppUpdater {
   // Using destructuring to access autoUpdater due to the CommonJS module of 'electron-updater'.
   // It is a workaround for ESM compatibility issues, see https://github.com/electron-userland/electron-builder/issues/7976.
@@ -80,6 +81,7 @@ app
   .finally(() => {
     bindDockerIpc(mainWindow);
     bindMenuIpc(mainWindow);
+    bindThemeIpc(mainWindow); 
   });
 
 ipcMain.handle("query", async (_, connectionId, query) => {
