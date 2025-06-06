@@ -1,4 +1,4 @@
-import { ThemeType } from "@/context/theme-provider";
+import { ThemeMode } from "@/context/theme-provider";
 import { Colors } from "../../src/theme/Colors";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -21,7 +21,7 @@ const isDev = process.env.NODE_ENV === "development";
  */
 function getWindowConfig(
   connId?: string,
-  theme: ThemeType = "light",
+  theme: ThemeMode = "light",
 ): Electron.BrowserWindowConstructorOptions {
   const focusedWindow = BrowserWindow.getFocusedWindow();
 

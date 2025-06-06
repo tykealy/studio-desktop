@@ -10,6 +10,8 @@ import {
   settings,
 } from "../main";
 import { ThemeType } from "@/context/theme-provider";
+import { nativeTheme } from "electron";
+
 
 const autoUpdater = getAutoUpdater();
 
@@ -23,9 +25,10 @@ export class MainWindow {
    * Initialize the main window
    */
   public init() {
-    const theme = settings.get<ThemeType>("theme") || "light";
+    const theme = settings.get<ThemeType>("theme") || "system";  
+    const effectiveTheme = theme === "system" ? (nativeTheme.shouldUseDarkColors ? "dark" : "light") : theme;
     this.win = new BrowserWindow({
-      ...getWindowConfig(undefined, theme),
+      ...getWindowConfig(undefined, effectiveTheme),
       show: true,
       title: "Outerbase Studio",
       autoHideMenuBar: true,
