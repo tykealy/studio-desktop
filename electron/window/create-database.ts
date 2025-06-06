@@ -6,6 +6,8 @@ import { getWindowConfig, isDev } from "../utils";
 import { MainWindow } from "./main-window";
 import { settings } from "../main";
 import { STUDIO_ENDPOINT } from "../constants";
+import { nativeTheme } from "electron";
+
 
 export const windowMap = new Map<string, BrowserWindow>();
 
@@ -23,14 +25,15 @@ export function createDatabaseWindow(ctx: {
   enableDebug?: boolean;
 }) {
   const win = ctx.main.getWindow();
-  const theme = settings.get<ThemeType>("theme") || "light";
-  const dbWindow = new BrowserWindow(getWindowConfig(ctx.conn.id, theme));
+  const theme = settings.get<ThemeType>("theme") || "system";
+  const effectiveTheme = theme === "system" ? (nativeTheme.shouldUseDarkColors ? "dark" : "light") : theme;
+  const dbWindow = new BrowserWindow(getWindowConfig(ctx.conn.id, effectiveTheme));
 
   ConnectionPool.create(ctx.conn);
 
   const queryString = new URLSearchParams({
     name: ctx.conn.name,
-    theme,
+    theme: effectiveTheme,
     color: ctx.conn.color || "",
   }).toString();
 
