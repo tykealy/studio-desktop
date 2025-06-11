@@ -54,7 +54,7 @@ export default function ConnectionEditor({
   const [visible, setVisible] = useState(false);
   const [selectedColor, setSelectedColor] = useState(value.color);
 
-  const colors = ["red", "blue", "green", "yellow", "purple", "gray"];
+  const colors = ["red", "blue", "green", "yellow", "violet", "gray"];
 
   return (
     <div className="flex flex-col gap-4">

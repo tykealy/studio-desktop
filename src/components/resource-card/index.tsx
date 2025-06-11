@@ -73,9 +73,9 @@ export default function ResourceCard({
 
               "from-blue-500/20 to-indigo-500/5 text-blue-500 dark:from-blue-800/50 dark:to-indigo-800/10 dark:text-blue-300":
                 color === "blue",
-
-              "from-fuchsia-500/30 via-teal-500/30 to-yellow-500/30 *:mix-blend-overlay dark:from-fuchsia-800/50 dark:via-teal-800/50 dark:to-yellow-800/50":
-                color === "rainbow",
+              
+              "from-fuchsia-500/30 text-violet-500 via-teal-500/30 to-yellow-500/30 *:mix-blend-overlay dark:from-fuchsia-800/50 dark:via-teal-800/50 dark:to-yellow-800/50":
+                color === "violet",
             },
           )}
         >
@@ -115,7 +115,8 @@ export default function ResourceCard({
               color === "orange" || color === "yellow" || color === "red",
             "from-emerald-500 to-teal-500": color === "green",
             "from-sky-500 to-indigo-500": color === "blue",
-            "from-fuchsia-500 via-sky-500 to-yellow-500": color === "rainbow",
+            "from-violet-500 to-purple-950": color === "violet",
+            "from-fuchsia-500 via-sky-500 to-yellow-500": color === "raindow",
           },
         )}
       />
