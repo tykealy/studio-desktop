@@ -19,8 +19,8 @@ export function getDatabaseColor(color?: string) {
     return `bg-green-500`;
   } else if (color === "yellow") {
     return `bg-yellow-500`;
-  } else if (color === "purple") {
-    return `bg-purple-500`;
+  } else if (color === "violet") {
+    return `bg-violet-500`;
   } else if (color === "gray") {
     return `bg-gray-500`;
   }
